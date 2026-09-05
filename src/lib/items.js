@@ -1,0 +1,141 @@
+export const seedItems = [
+	{
+		id: 'saddle-leather-settee',
+		title: 'Saddle Leather Settee',
+		category: 'Seating',
+		era: 'Contemporary',
+		price: 1280,
+		status: 'Available',
+		image: '/sofa.jpg',
+		dimensions: '78 W × 34 D × 31 H in.',
+		condition: 'Excellent',
+		materials: 'Full-grain leather, steel, hardwood',
+		description: 'A low-profile leather settee with a warm saddle finish and clean architectural frame.',
+		story: 'Acquired from a Davis Islands residence and professionally conditioned before arriving in the shop.',
+		dateAdded: '2026-09-04',
+		featured: true
+	},
+	{
+		id: 'patterned-accent-chairs',
+		title: 'Patterned Accent Chairs',
+		category: 'Seating',
+		era: 'Late 20th century',
+		price: 640,
+		status: 'Available',
+		image: '/mirror.jpg',
+		dimensions: '24 W × 25 D × 34 H in. each',
+		condition: 'Very good',
+		materials: 'Printed textile, teak',
+		description: 'A playful mismatched pair united by sculpted teak legs and saturated geometric textiles.',
+		story: 'Sold as a pair. Both chairs were reupholstered by a local craftsperson.',
+		dateAdded: '2026-09-03',
+		featured: true
+	},
+	{
+		id: 'reclaimed-wall-display',
+		title: 'Reclaimed Wall Display',
+		category: 'Storage',
+		era: 'Handmade',
+		price: 185,
+		status: 'Reserved',
+		image: '/chair.jpg',
+		dimensions: '68 W × 8 D × 31 H in.',
+		condition: 'Good',
+		materials: 'Reclaimed pine',
+		description: 'An asymmetrical collection of open wood boxes for plants, books, and small objects.',
+		story: 'Built from reclaimed shipping crates; surface wear has been left visible.',
+		dateAdded: '2026-09-02',
+		featured: true
+	},
+	{
+		id: 'gallery-leather-sectional',
+		title: 'Gallery Leather Sectional',
+		category: 'Seating',
+		era: 'Contemporary',
+		price: 2250,
+		status: 'Available',
+		image: '/sideboard.jpg',
+		dimensions: '118 W × 92 D × 32 H in.',
+		condition: 'Very good',
+		materials: 'Leather, hardwood',
+		description: 'A generous modular leather sectional designed for a large living space.',
+		story: 'Consigned after a model-home installation; light showroom use only.',
+		dateAdded: '2026-08-31',
+		featured: false
+	},
+	{
+		id: 'sculptural-modular-sofa',
+		title: 'Sculptural Modular Sofa',
+		category: 'Seating',
+		era: 'Contemporary',
+		price: 1980,
+		status: 'Available',
+		image: '/lamp.jpg',
+		dimensions: '112 W × 68 D × 29 H in.',
+		condition: 'Excellent',
+		materials: 'Woven wool blend, oak',
+		description: 'A soft grey modular sofa with an unusually curved chaise and understated oak feet.',
+		story: 'From a private collection in St. Petersburg.',
+		dateAdded: '2026-08-28',
+		featured: false
+	},
+	{
+		id: 'glass-dining-set',
+		title: 'Glass Dining Set',
+		category: 'Tables',
+		era: 'Postmodern',
+		price: 720,
+		status: 'Available',
+		image: '/table.jpg',
+		dimensions: '45 diameter × 30 H in.',
+		condition: 'Good',
+		materials: 'Tempered glass, chrome, textile',
+		description: 'Compact glass dining table with four graphic upholstered chairs.',
+		story: 'A complete apartment-scale set, ideal for a breakfast room or smaller dining area.',
+		dateAdded: '2026-08-24',
+		featured: false
+	},
+	{
+		id: 'walnut-coffee-table',
+		title: 'Walnut Coffee Table',
+		category: 'Tables',
+		era: 'Modern',
+		price: 460,
+		status: 'Sold',
+		image: '/ceramics.jpg',
+		dimensions: '48 W × 24 D × 16 H in.',
+		condition: 'Very good',
+		materials: 'Walnut veneer, blackened steel, glass',
+		description: 'A spare two-tier coffee table with a floating glass top and warm walnut shelf.',
+		story: 'Recently sold. Kept in the archive so visitors can see the kinds of pieces that pass through the shop.',
+		dateAdded: '2026-08-18',
+		featured: false
+	},
+	{
+		id: 'coastal-lounge-suite',
+		title: 'Coastal Lounge Suite',
+		category: 'Seating',
+		era: 'Contemporary',
+		price: 1650,
+		status: 'Available',
+		image: '/dresser.jpg',
+		dimensions: '96 W × 90 D × 34 H in.',
+		condition: 'Good',
+		materials: 'Linen blend, hardwood',
+		description: 'Deep blue sectional with a relaxed profile and generous feather-filled cushions.',
+		story: 'A comfortable family piece with light, honest wear.',
+		dateAdded: '2026-08-12',
+		featured: false
+	}
+];
+
+export const categories = ['All', ...new Set(seedItems.map((item) => item.category))];
+
+export function formatPrice(value) {
+	return new Intl.NumberFormat('en-US', {
+		style: 'currency',
+		currency: 'USD',
+		maximumFractionDigits: 0
+	}).format(value);
+}
+
