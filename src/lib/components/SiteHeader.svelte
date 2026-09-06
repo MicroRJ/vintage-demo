@@ -7,9 +7,8 @@
 </script>
 
 <header class="site-header">
-	<a class="wordmark" href="/" aria-label="Found Again home">
-		<span>FOUND</span>
-		<span>AGAIN</span>
+	<a class="wordmark" href="/" aria-label="The Room Exchange home">
+		<img class="wordmark-logo" src="/room-exchange-logo.jpg" alt="The Room Exchange" />
 	</a>
 
 	<button
@@ -23,12 +22,11 @@
 	</button>
 
 	<nav id="primary-navigation" class:open={menuOpen} aria-label="Primary navigation">
-		<a href="/shop" onclick={closeMenu}>Shop</a>
+		<a href="/shop" onclick={closeMenu}>Inventory</a>
 		<a href="/#visit" onclick={closeMenu}>Visit</a>
 		<a href="/#consign" onclick={closeMenu}>Consign</a>
-		<a href="/admin" onclick={closeMenu}>Inventory desk</a>
+		<a href="/admin" onclick={closeMenu}>Staff demo</a>
 	</nav>
 
-	<a class="header-contact" href="tel:+18135550194">Tampa · (813) 555-0194</a>
+	<a class="header-contact" href="tel:+18139092411">Carrollwood · (813) 909-2411</a>
 </header>
-

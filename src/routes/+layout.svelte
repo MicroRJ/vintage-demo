@@ -7,14 +7,15 @@
 </script>
 
 <svelte:head>
-	<title>Found Again — Vintage Furniture & Objects</title>
+	<title>The Room Exchange — Consignment Furniture in Tampa</title>
 	<meta
 		name="description"
-		content="A browsable, mobile-friendly inventory demo for vintage, antique, and consignment shops."
+		content="A searchable, mobile-friendly inventory concept for The Room Exchange in Carrollwood, Tampa."
 	/>
+	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
+<div class="concept-banner">Independent website concept · Sample inventory · Not the official website</div>
 <SiteHeader />
 <main>{@render children()}</main>
 <SiteFooter />
-

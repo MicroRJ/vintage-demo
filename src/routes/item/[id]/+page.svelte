@@ -7,8 +7,8 @@
 </script>
 
 <svelte:head>
-	<title>{item ? `${item.title} — Found Again` : 'Item Not Found — Found Again'}</title>
-	<meta name="description" content={item?.description ?? 'Browse the current Found Again collection.'} />
+	<title>{item ? `${item.title} — The Room Exchange` : 'Item Not Found — The Room Exchange'}</title>
+	<meta name="description" content={item?.description ?? 'Browse sample inventory for The Room Exchange.'} />
 </svelte:head>
 
 {#if item}
@@ -38,16 +38,16 @@
 
 			{#if item.status === 'Sold'}
 				<div class="sold-note">
-					<strong>This piece has found a home.</strong>
+					<strong>This piece has been sold.</strong>
 					<p>Browse the current collection for similar pieces.</p>
 					<a class="button-link" href="/shop">See what is available <span>↗</span></a>
 				</div>
 			{:else}
 				<a
 					class="inquiry-button"
-					href={`mailto:hello@foundagain.example?subject=${encodeURIComponent(`Hold request: ${item.title}`)}&body=${encodeURIComponent(`Hi, I'm interested in ${item.title}. Is it still ${item.status.toLowerCase()}?`)}`}
+					href="tel:+18139092411"
 				>
-					<span>{item.status === 'Reserved' ? 'Ask about this piece' : 'Request a 24-hour hold'}</span>
+					<span>{item.status === 'Held' ? 'Ask about availability' : 'Call about this piece'}</span>
 					<span aria-hidden="true">↗</span>
 				</a>
 			{/if}

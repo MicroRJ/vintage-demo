@@ -34,20 +34,20 @@
 </script>
 
 <svelte:head>
-	<title>Shop the Collection — Found Again</title>
+	<title>Current Inventory — The Room Exchange</title>
 </svelte:head>
 
 <header class="page-hero shop-hero">
-	<p class="eyebrow">Current inventory</p>
-	<h1 class="page-title">Find what<br />you came for.</h1>
-	<p>Every piece is one of one. Available inventory is updated as pieces arrive, sell, or go on hold.</p>
+	<p class="eyebrow">Searchable showroom concept</p>
+	<h1 class="page-title">See what is<br />here today.</h1>
+	<p>Search by item, category, style, material, or availability before visiting the showroom.</p>
 </header>
 
 <section class="catalog-shell">
 	<div class="catalog-toolbar">
 		<label class="catalog-search">
 			<span>Search</span>
-			<input bind:value={query} placeholder="Try leather, table, teak…" />
+			<input bind:value={query} placeholder="Try sectional, dining, wood…" />
 		</label>
 
 		<div class="filter-group" aria-label="Filter by category">
@@ -63,7 +63,7 @@
 			<span>Status</span>
 			<select bind:value={status}>
 				<option>Available</option>
-				<option>Reserved</option>
+				<option>Held</option>
 				<option>Sold</option>
 				<option>All</option>
 			</select>
@@ -97,9 +97,8 @@
 		<div class="empty-state">
 			<p class="eyebrow">Nothing here yet</p>
 			<h2>Try a broader search.</h2>
-			<p>The inventory changes often. If you are hunting for something specific, send us a note.</p>
-			<a class="button-link" href="mailto:hello@foundagain.example">Tell us what you need <span>↗</span></a>
+			<p>The inventory changes often. If you are hunting for something specific, call the store.</p>
+			<a class="button-link" href="tel:+18139092411">Call (813) 909-2411 <span>↗</span></a>
 		</div>
 	{/if}
 </section>
-

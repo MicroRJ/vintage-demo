@@ -110,7 +110,7 @@
 </script>
 
 <svelte:head>
-	<title>Inventory Desk — Found Again</title>
+	<title>Inventory Desk — The Room Exchange Concept</title>
 </svelte:head>
 
 <div class="admin-shell" class:editor-open={editorOpen}>
@@ -181,7 +181,7 @@
 				<div class="quick-status">
 					<span>Listing status</span>
 					<div>
-						{#each ['Available', 'Reserved', 'Sold'] as option}
+						{#each ['Available', 'Held', 'Sold'] as option}
 							<button class:active={draft.status === option} type="button" onclick={() => setStatus(option)}>{option}</button>
 						{/each}
 					</div>
@@ -219,4 +219,3 @@
 		{/if}
 	</section>
 </div>
-

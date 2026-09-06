@@ -2,7 +2,7 @@ import { browser } from '$app/environment';
 import { writable } from 'svelte/store';
 import { seedItems } from './items.js';
 
-const STORAGE_KEY = 'found-again-inventory-v1';
+const STORAGE_KEY = 'room-exchange-concept-inventory-v1';
 
 function initialItems() {
 	if (!browser) return seedItems;
@@ -26,4 +26,3 @@ if (browser) {
 export function resetInventory() {
 	inventory.set(structuredClone(seedItems));
 }
-
