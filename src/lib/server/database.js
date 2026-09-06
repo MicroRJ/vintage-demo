@@ -54,6 +54,34 @@ export async function listItems() {
 	return rows.map(mapItem);
 }
 
+export async function listFeaturedItems() {
+	const database = getDatabase();
+	const rows = await database`
+		SELECT
+			slug,
+			title,
+			category,
+			era,
+			price_cents,
+			status,
+			image_url,
+			dimensions,
+			condition,
+			materials,
+			description,
+			story,
+			listed_at::text AS listed_at,
+			featured
+		FROM items
+		WHERE archived_at IS NULL
+			AND featured = TRUE
+		ORDER BY listed_at DESC, title ASC
+		LIMIT 3
+	`;
+
+	return rows.map(mapItem);
+}
+
 export async function getItemBySlug(slug) {
 	const database = getDatabase();
 	const rows = await database`

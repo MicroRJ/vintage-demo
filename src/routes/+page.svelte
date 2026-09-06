@@ -1,9 +1,9 @@
 <script>
 	import ItemCard from '$lib/components/ItemCard.svelte';
-	import { inventory } from '$lib/inventory-store.js';
+
+	let { data } = $props();
 
 	let query = $state('');
-	let featured = $derived($inventory.filter((item) => item.featured).slice(0, 3));
 </script>
 
 <svelte:head>
@@ -43,7 +43,7 @@
 	</div>
 
 	<div class="featured-grid">
-		{#each featured as item, index (item.id)}
+		{#each data.featured as item, index (item.id)}
 			<ItemCard {item} {index} />
 		{/each}
 	</div>
