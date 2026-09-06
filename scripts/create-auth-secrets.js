@@ -1,58 +1,17 @@
 import { randomBytes } from 'node:crypto';
+import { createInterface } from 'node:readline/promises';
 import { hashPassword } from '../src/lib/server/password.js';
 
-function hiddenPrompt(message) {
-	if (!process.stdin.isTTY || !process.stdin.setRawMode) {
-		throw new Error('Run this command in an interactive terminal.');
-	}
-
-	return new Promise((resolve, reject) => {
-		let value = '';
-		process.stdout.write(message);
-		process.stdin.setRawMode(true);
-		process.stdin.resume();
-		process.stdin.setEncoding('utf8');
-
-		function finish() {
-			process.stdin.setRawMode(false);
-			process.stdin.pause();
-			process.stdin.off('data', onData);
-			process.stdout.write('\n');
-		}
-
-		function onData(chunk) {
-			for (const character of chunk) {
-				if (character === '\u0003') {
-					finish();
-					reject(new Error('Cancelled.'));
-					return;
-				}
-
-				if (character === '\r' || character === '\n') {
-					finish();
-					resolve(value);
-					return;
-				}
-
-				if (character === '\b' || character === '\u007f') {
-					value = value.slice(0, -1);
-					continue;
-				}
-
-				value += character;
-			}
-		}
-
-		process.stdin.on('data', onData);
-	});
-}
-
-const password = await hiddenPrompt('Choose a staff password (input hidden): ');
+const terminal = createInterface({ input: process.stdin, output: process.stdout });
+const password = await terminal.question('Choose a staff password: ');
 if (password.length < 12) {
+	terminal.close();
 	throw new Error('Use at least 12 characters.');
 }
 
-const confirmation = await hiddenPrompt('Enter it again: ');
+const confirmation = await terminal.question('Enter it again: ');
+terminal.close();
+
 if (password !== confirmation) {
 	throw new Error('The passwords did not match.');
 }
