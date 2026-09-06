@@ -28,11 +28,12 @@ export async function hashPassword(password) {
 		parallelization,
 		salt.toString('base64url'),
 		derivedKey.toString('base64url')
-	].join('$');
+	].join(':');
 }
 
 export async function verifyPassword(password, storedHash) {
-	const [algorithm, costText, blockSizeText, parallelizationText, saltText, hashText] = storedHash.split('$');
+	const separator = storedHash.includes(':') ? ':' : '$';
+	const [algorithm, costText, blockSizeText, parallelizationText, saltText, hashText] = storedHash.split(separator);
 	if (algorithm !== 'scrypt' || !saltText || !hashText) return false;
 
 	const options = {
