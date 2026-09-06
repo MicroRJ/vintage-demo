@@ -1,6 +1,8 @@
 <script>
-	import { inventory, resetInventory } from '$lib/inventory-store.js';
+	import { enhance } from '$app/forms';
 	import { formatPrice } from '$lib/items.js';
+
+	let { data } = $props();
 
 	const blankItem = () => ({
 		id: '',
@@ -28,7 +30,7 @@
 
 	let visibleItems = $derived.by(() => {
 		const needle = query.trim().toLowerCase();
-		return $inventory
+		return data.items
 			.filter((item) => !needle || [item.title, item.category, item.status].some((field) => field.toLowerCase().includes(needle)))
 			.toSorted((a, b) => b.dateAdded.localeCompare(a.dateAdded));
 	});
@@ -49,64 +51,41 @@
 		notice = '';
 	}
 
-	function slugify(value) {
-		return value
-			.toLowerCase()
-			.trim()
-			.replace(/[^a-z0-9]+/g, '-')
-			.replace(/^-|-$/g, '');
-	}
-
-	function saveItem(event) {
-		event.preventDefault();
-		if (!draft.title.trim()) return;
-
-		const next = structuredClone(draft);
-		next.price = Number(next.price) || 0;
-		next.id = selectedId || `${slugify(next.title) || 'piece'}-${Date.now().toString(36)}`;
-
-		inventory.update((items) => {
-			const index = items.findIndex((item) => item.id === selectedId);
-			if (index === -1) return [next, ...items];
-			return items.map((item, itemIndex) => (itemIndex === index ? next : item));
-		});
-
-		selectedId = next.id;
-		draft = structuredClone(next);
-		creating = false;
-		notice = 'Saved. The public catalog is updated.';
-	}
-
 	function setStatus(nextStatus) {
 		draft.status = nextStatus;
 	}
 
-	function removeItem() {
-		if (!selectedId || !confirm(`Remove ${draft.title} from this demo?`)) return;
-		inventory.update((items) => items.filter((item) => item.id !== selectedId));
-		selectedId = '';
-		draft = blankItem();
-		editorOpen = false;
-		notice = 'Piece removed.';
+	function confirmRemoval(event) {
+		if (!confirm(`Remove ${draft.title} from the public catalog?`)) {
+			event.preventDefault();
+		}
 	}
 
-	function restoreDemo() {
-		if (!confirm('Restore the original demonstration inventory?')) return;
-		resetInventory();
-		selectedId = '';
-		draft = blankItem();
-		editorOpen = false;
-		notice = 'Demo inventory restored.';
-	}
+	function enhanceEditor() {
+		notice = 'Saving…';
 
-	function loadImage(event) {
-		const file = event.currentTarget.files?.[0];
-		if (!file) return;
-		const reader = new FileReader();
-		reader.onload = () => {
-			draft.image = String(reader.result);
+		return async ({ result, update }) => {
+			await update({ reset: false });
+
+			if (result.type !== 'success') {
+				notice = result.data?.message ?? 'The change could not be saved.';
+				return;
+			}
+
+			notice = result.data.message;
+
+			if (result.data.operation === 'remove') {
+				selectedId = '';
+				draft = blankItem();
+				editorOpen = false;
+				creating = false;
+				return;
+			}
+
+			selectedId = result.data.item.id;
+			draft = structuredClone(result.data.item);
+			creating = false;
 		};
-		reader.readAsDataURL(file);
 	}
 
 	function facebookPostText() {
@@ -168,7 +147,7 @@
 				<span>Search inventory</span>
 				<input bind:value={query} placeholder="Name, category, or status" />
 			</label>
-			<p>{$inventory.length} total</p>
+			<p>{data.items.length} total</p>
 		</div>
 
 		{#if notice && !editorOpen}
@@ -194,8 +173,7 @@
 		</div>
 
 		<footer class="admin-list-footer">
-			<p>Changes are saved in this browser for the demo.</p>
-			<button type="button" onclick={restoreDemo}>Restore demo inventory</button>
+			<p>Changes are saved to the shared inventory database.</p>
 		</footer>
 	</section>
 
@@ -209,13 +187,14 @@
 				</div>
 			</header>
 
-			<form class="editor-form" onsubmit={saveItem}>
+			<form class="editor-form" method="POST" action="?/save" use:enhance={enhanceEditor}>
+				<input type="hidden" name="slug" value={selectedId} />
+				<input type="hidden" name="status" value={draft.status} />
+				<input type="hidden" name="image" value={draft.image} />
+
 				<div class="editor-photo">
 					<img src={draft.image} alt="Current item preview" />
-					<label class="photo-button">
-						<span>Take or choose a photo</span>
-						<input type="file" accept="image/*" capture="environment" onchange={loadImage} />
-					</label>
+					<p class="photo-button">Photo uploads are the next integration step</p>
 				</div>
 
 				<div class="quick-status">
@@ -228,16 +207,16 @@
 				</div>
 
 				<div class="form-grid">
-					<label class="span-two"><span>Title</span><input required bind:value={draft.title} /></label>
-					<label><span>Category</span><input required bind:value={draft.category} /></label>
-					<label><span>Era</span><input bind:value={draft.era} placeholder="Mid-century, 1920s…" /></label>
-					<label><span>Price</span><div class="money-input"><span>$</span><input type="number" min="0" step="1" bind:value={draft.price} /></div></label>
-					<label><span>Condition</span><select bind:value={draft.condition}><option>Excellent</option><option>Very good</option><option>Good</option><option>Fair</option><option>As found</option></select></label>
-					<label class="span-two"><span>Dimensions</span><input bind:value={draft.dimensions} placeholder="48 W × 24 D × 30 H in." /></label>
-					<label class="span-two"><span>Materials</span><input bind:value={draft.materials} /></label>
-					<label class="span-two"><span>Short description</span><textarea rows="3" bind:value={draft.description}></textarea></label>
-					<label class="span-two"><span>Story / provenance</span><textarea rows="3" bind:value={draft.story}></textarea></label>
-					<label class="feature-toggle span-two"><input type="checkbox" bind:checked={draft.featured} /><span>Feature this piece on the home page</span></label>
+					<label class="span-two"><span>Title</span><input name="title" required bind:value={draft.title} /></label>
+					<label><span>Category</span><input name="category" required bind:value={draft.category} /></label>
+					<label><span>Era</span><input name="era" bind:value={draft.era} placeholder="Mid-century, 1920s…" /></label>
+					<label><span>Price</span><div class="money-input"><span>$</span><input name="price" type="number" min="0" step="1" bind:value={draft.price} /></div></label>
+					<label><span>Condition</span><select name="condition" bind:value={draft.condition}><option>Excellent</option><option>Very good</option><option>Good</option><option>Fair</option><option>As found</option></select></label>
+					<label class="span-two"><span>Dimensions</span><input name="dimensions" bind:value={draft.dimensions} placeholder="48 W × 24 D × 30 H in." /></label>
+					<label class="span-two"><span>Materials</span><input name="materials" bind:value={draft.materials} /></label>
+					<label class="span-two"><span>Short description</span><textarea name="description" rows="3" bind:value={draft.description}></textarea></label>
+					<label class="span-two"><span>Story / provenance</span><textarea name="story" rows="3" bind:value={draft.story}></textarea></label>
+					<label class="feature-toggle span-two"><input name="featured" value="true" type="checkbox" bind:checked={draft.featured} /><span>Feature this piece on the home page</span></label>
 				</div>
 
 				{#if notice}
@@ -247,7 +226,7 @@
 				<div class="editor-actions">
 					<button class="save-button" type="submit">Save to catalog</button>
 					{#if !creating}<button class="share-button" type="button" onclick={copyFacebookPost}>Copy Facebook post</button>{/if}
-					{#if !creating}<button class="delete-button" type="button" onclick={removeItem}>Remove piece</button>{/if}
+					{#if !creating}<button class="delete-button" type="submit" formaction="?/remove" formnovalidate onclick={confirmRemoval}>Remove piece</button>{/if}
 				</div>
 			</form>
 		{:else}
