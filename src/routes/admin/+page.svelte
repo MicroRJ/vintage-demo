@@ -1,5 +1,6 @@
 <script>
 	import { inventory, resetInventory } from '$lib/inventory-store.js';
+	import { formatPrice } from '$lib/items.js';
 
 	const blankItem = () => ({
 		id: '',
@@ -107,6 +108,45 @@
 		};
 		reader.readAsDataURL(file);
 	}
+
+	function facebookPostText() {
+		const statusLead = {
+			Available: 'Now available',
+			Held: 'Currently held',
+			Sold: 'Sold'
+		}[draft.status] ?? 'Inventory update';
+		const itemUrl = `${window.location.origin}/item/${encodeURIComponent(selectedId)}`;
+		const details = [draft.category, draft.era, draft.condition].filter(Boolean).join(' · ');
+
+		return [
+			`${statusLead}: ${draft.title}`,
+			draft.description.trim(),
+			[formatPrice(Number(draft.price) || 0), details].filter(Boolean).join(' · '),
+			`View current availability and details: ${itemUrl}`,
+			'The Room Exchange\n14340 N Dale Mabry Hwy, Tampa, FL\n(813) 909-2411'
+		]
+			.filter(Boolean)
+			.join('\n\n');
+	}
+
+	async function copyFacebookPost() {
+		const post = facebookPostText();
+
+		try {
+			await navigator.clipboard.writeText(post);
+		} catch {
+			const textarea = document.createElement('textarea');
+			textarea.value = post;
+			textarea.style.position = 'fixed';
+			textarea.style.opacity = '0';
+			document.body.append(textarea);
+			textarea.select();
+			document.execCommand('copy');
+			textarea.remove();
+		}
+
+		notice = 'Facebook post copied. Paste it into the Page composer when you are ready.';
+	}
 </script>
 
 <svelte:head>
@@ -206,6 +246,7 @@
 
 				<div class="editor-actions">
 					<button class="save-button" type="submit">Save to catalog</button>
+					{#if !creating}<button class="share-button" type="button" onclick={copyFacebookPost}>Copy Facebook post</button>{/if}
 					{#if !creating}<button class="delete-button" type="button" onclick={removeItem}>Remove piece</button>{/if}
 				</div>
 			</form>

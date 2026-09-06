@@ -1205,6 +1205,24 @@ img {
 	min-width: 190px;
 }
 
+.share-button {
+	min-height: 46px;
+	padding: 12px 16px;
+	border: 1px solid var(--forest);
+	background: transparent;
+	color: var(--forest);
+	cursor: pointer;
+	font-size: 0.68rem;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+}
+
+.share-button:hover {
+	background: var(--forest);
+	color: var(--white);
+}
+
 .delete-button {
 	color: #8e3829;
 }
@@ -1636,6 +1654,10 @@ img {
 	.editor-actions {
 		align-items: stretch;
 		flex-direction: column;
+	}
+
+	.share-button {
+		width: 100%;
 	}
 
 	.delete-button {
