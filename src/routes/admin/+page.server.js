@@ -1,8 +1,14 @@
 import { randomUUID } from 'node:crypto';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
 import { archiveItem, createItem, listItems, updateItem } from '$lib/server/database.js';
 
 const statuses = new Set(['Available', 'Held', 'Sold']);
+
+function requireAdmin(locals) {
+	if (!locals.isAdmin) {
+		redirect(303, '/login?next=/admin');
+	}
+}
 
 function textValue(formData, name) {
 	return String(formData.get(name) ?? '').trim();
@@ -45,14 +51,18 @@ function readItem(formData) {
 	};
 }
 
-export async function load() {
+export async function load({ locals }) {
+	requireAdmin(locals);
+
 	return {
 		items: await listItems()
 	};
 }
 
 export const actions = {
-	save: async ({ request }) => {
+	save: async ({ locals, request }) => {
+		requireAdmin(locals);
+
 		const formData = await request.formData();
 		const parsed = readItem(formData);
 		if (!parsed.item) return fail(400, { operation: 'save', message: parsed.message });
@@ -74,7 +84,9 @@ export const actions = {
 		return { operation: 'save', message: 'Saved. The public catalog is updated.', item };
 	},
 
-	remove: async ({ request }) => {
+	remove: async ({ locals, request }) => {
+		requireAdmin(locals);
+
 		const formData = await request.formData();
 		const slug = textValue(formData, 'slug');
 

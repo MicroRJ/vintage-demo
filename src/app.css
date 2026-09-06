@@ -18,6 +18,85 @@
 	font-synthesis: none;
 }
 
+.login-shell {
+	display: grid;
+	min-height: calc(100svh - 92px);
+	place-items: center;
+	padding: 48px 20px;
+	background: var(--paper-deep);
+}
+
+.login-panel {
+	width: min(100%, 520px);
+	padding: clamp(32px, 6vw, 64px);
+	border: 1px solid var(--line);
+	background: var(--paper);
+}
+
+.login-panel h1 {
+	margin: 8px 0 18px;
+	font-family: var(--serif);
+	font-size: clamp(3rem, 8vw, 5rem);
+	font-weight: 400;
+	line-height: 0.9;
+}
+
+.login-panel > p:not(.eyebrow) {
+	margin: 0 0 32px;
+	color: var(--muted);
+	line-height: 1.6;
+}
+
+.login-panel label span {
+	display: block;
+	margin-bottom: 9px;
+	color: var(--muted);
+	font-size: 0.62rem;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+}
+
+.login-panel input {
+	width: 100%;
+	margin-bottom: 20px;
+	padding: 14px 0;
+	border: 0;
+	border-bottom: 1px solid var(--ink);
+	border-radius: 0;
+	outline: 0;
+	background: transparent;
+}
+
+.login-panel .save-button {
+	width: 100%;
+}
+
+.admin-heading-actions {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.logout-button {
+	padding: 10px 2px;
+	border: 0;
+	border-bottom: 1px solid var(--ink);
+	background: transparent;
+	cursor: pointer;
+	font-size: 0.68rem;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+}
+
+@media (max-width: 600px) {
+	.admin-heading-actions {
+		align-items: flex-end;
+		flex-direction: column-reverse;
+	}
+}
+
 * {
 	box-sizing: border-box;
 }

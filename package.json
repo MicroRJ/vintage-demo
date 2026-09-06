@@ -5,8 +5,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite dev",
-    "build": "vite build",
-    "db:migrate": "node --env-file=.env.local scripts/migrate.js",
+		"build": "vite build",
+		"auth:setup": "node scripts/create-auth-secrets.js",
+		"db:migrate": "node --env-file=.env.local scripts/migrate.js",
     "db:seed": "node --env-file=.env.local scripts/seed.js",
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''"

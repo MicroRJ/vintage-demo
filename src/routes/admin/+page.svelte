@@ -139,7 +139,12 @@
 				<p class="eyebrow">Private demonstration</p>
 				<h1>Inventory desk</h1>
 			</div>
-			<button class="new-piece-button" type="button" onclick={createItem}>+ New piece</button>
+			<div class="admin-heading-actions">
+				<form method="POST" action="/logout">
+					<button class="logout-button" type="submit">Log out</button>
+				</form>
+				<button class="new-piece-button" type="button" onclick={createItem}>+ New piece</button>
+			</div>
 		</header>
 
 		<div class="admin-search-row">
