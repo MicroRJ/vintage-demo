@@ -1,17 +1,18 @@
 <script>
 	import { page } from '$app/state';
 	import ItemCard from '$lib/components/ItemCard.svelte';
-	import { inventory } from '$lib/inventory-store.js';
+
+	let { data } = $props();
 
 	let query = $state(page.url.searchParams.get('q') ?? '');
 	let category = $state('All');
 	let status = $state('Available');
 	let sort = $state('newest');
 
-	let categoryOptions = $derived(['All', ...new Set($inventory.map((item) => item.category))]);
+	let categoryOptions = $derived(['All', ...new Set(data.items.map((item) => item.category))]);
 	let results = $derived.by(() => {
 		const needle = query.trim().toLowerCase();
-		const filtered = $inventory.filter((item) => {
+		const filtered = data.items.filter((item) => {
 			const matchesQuery = !needle || [
 				item.title,
 				item.category,
