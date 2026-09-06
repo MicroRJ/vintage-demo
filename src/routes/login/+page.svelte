@@ -1,5 +1,6 @@
 <script>
 	let { data, form } = $props();
+	let showPassword = $state(false);
 </script>
 
 <svelte:head>
@@ -17,7 +18,22 @@
 			<input type="hidden" name="next" value={form?.next ?? data.next} />
 			<label>
 				<span>Password</span>
-				<input name="password" type="password" autocomplete="current-password" required />
+				<div class="login-password">
+					<input name="password" type={showPassword ? 'text' : 'password'} autocomplete="current-password" required />
+					<button
+						class="password-toggle"
+						type="button"
+						aria-label={showPassword ? 'Hide password' : 'Show password'}
+						aria-pressed={showPassword}
+						onclick={() => (showPassword = !showPassword)}
+					>
+						<svg viewBox="0 0 24 24" aria-hidden="true">
+							<path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6Z" />
+							<circle cx="12" cy="12" r="2.75" />
+							{#if showPassword}<path d="m4 4 16 16" />{/if}
+						</svg>
+					</button>
+				</div>
 			</label>
 
 			{#if form?.message}
