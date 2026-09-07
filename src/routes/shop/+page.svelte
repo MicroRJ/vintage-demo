@@ -8,6 +8,7 @@
 	let category = $state('All');
 	let status = $state('Available');
 	let sort = $state('newest');
+	let viewMode = $state('gallery');
 
 	let categoryOptions = $derived(['All', ...new Set(data.items.map((item) => item.category))]);
 	let results = $derived.by(() => {
@@ -83,13 +84,19 @@
 
 	<div class="catalog-summary">
 		<p>{results.length} {results.length === 1 ? 'piece' : 'pieces'}</p>
-		{#if query || category !== 'All' || status !== 'Available'}
-			<button type="button" onclick={() => { query = ''; category = 'All'; status = 'Available'; }}>Clear filters</button>
-		{/if}
+		<div class="catalog-summary-actions">
+			{#if query || category !== 'All' || status !== 'Available'}
+				<button class="clear-filters" type="button" onclick={() => { query = ''; category = 'All'; status = 'Available'; }}>Clear filters</button>
+			{/if}
+			<div class="catalog-view-switch" aria-label="Inventory view">
+				<button class:active={viewMode === 'gallery'} aria-pressed={viewMode === 'gallery'} type="button" onclick={() => (viewMode = 'gallery')}>Gallery</button>
+				<button class:active={viewMode === 'grid'} aria-pressed={viewMode === 'grid'} type="button" onclick={() => (viewMode = 'grid')}>Grid</button>
+			</div>
+		</div>
 	</div>
 
 	{#if results.length}
-		<div class="catalog-grid">
+		<div class="catalog-grid" class:grid-view={viewMode === 'grid'}>
 			{#each results as item, index (item.id)}
 				<ItemCard {item} {index} isAdmin={data.isAdmin} />
 			{/each}

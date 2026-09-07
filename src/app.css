@@ -781,6 +781,8 @@ img {
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	flex-wrap: wrap;
+	gap: 16px;
 	min-height: 85px;
 }
 
@@ -793,9 +795,35 @@ img {
 	text-transform: uppercase;
 }
 
-.catalog-summary button {
+.catalog-summary-actions {
+	display: flex;
+	align-items: center;
+	gap: 24px;
+}
+
+.catalog-summary .clear-filters {
 	padding: 12px 0;
 	border-bottom: 1px solid var(--ink);
+}
+
+.catalog-view-switch {
+	display: flex;
+	border: 1px solid var(--line);
+}
+
+.catalog-view-switch button {
+	min-height: 38px;
+	padding: 8px 12px;
+	border-right: 1px solid var(--line);
+}
+
+.catalog-view-switch button:last-child {
+	border-right: 0;
+}
+
+.catalog-view-switch button.active {
+	background: var(--forest);
+	color: var(--white);
 }
 
 .catalog-grid {
@@ -813,6 +841,29 @@ img {
 .catalog-grid .item-card:nth-child(7n + 1) .item-image,
 .catalog-grid .item-card:nth-child(7n + 4) .item-image {
 	aspect-ratio: 1.2 / 1;
+}
+
+.catalog-grid.grid-view {
+	grid-template-columns: repeat(3, minmax(0, 1fr));
+	column-gap: 18px;
+	row-gap: 42px;
+}
+
+.catalog-grid.grid-view .item-card:nth-child(n) {
+	grid-column: span 1;
+}
+
+.catalog-grid.grid-view .item-card:nth-child(n) .item-image {
+	aspect-ratio: 4 / 5;
+}
+
+.catalog-grid.grid-view .item-card-copy {
+	gap: 12px;
+	padding-top: 13px;
+}
+
+.catalog-grid.grid-view .item-card h3 {
+	font-size: clamp(1.15rem, 1.7vw, 1.55rem);
 }
 
 .empty-state {
@@ -1823,6 +1874,10 @@ img {
 		row-gap: 55px;
 	}
 
+	.catalog-grid.grid-view {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
 	.catalog-grid .item-card:nth-child(n) {
 		grid-column: span 1;
 	}
@@ -1972,6 +2027,29 @@ img {
 
 	.catalog-grid {
 		grid-template-columns: 1fr;
+	}
+
+	.catalog-grid.grid-view {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+		column-gap: 12px;
+		row-gap: 32px;
+	}
+
+	.catalog-grid.grid-view .item-card-copy {
+		display: block;
+		padding-top: 10px;
+	}
+
+	.catalog-grid.grid-view .item-card h3 {
+		font-size: 1.05rem;
+	}
+
+	.catalog-grid.grid-view .item-price {
+		margin-top: 8px;
+	}
+
+	.catalog-grid.grid-view .item-meta {
+		font-size: 0.57rem;
 	}
 
 	.catalog-grid .item-image {
