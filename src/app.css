@@ -1170,7 +1170,7 @@ img {
 	gap: 14px;
 	width: 100%;
 	min-width: 0;
-	padding: 0 14px 14px;
+	padding: 0 0 14px;
 	border: 0;
 	background: var(--paper);
 	color: var(--ink);
@@ -1187,12 +1187,19 @@ img {
 	box-shadow: inset 0 0 0 2px var(--rust);
 }
 
-.admin-items img {
+.admin-item-media {
 	grid-column: 1 / -1;
-	width: calc(100% + 28px);
-	height: auto;
-	margin: 0 -14px 2px;
+	display: block;
+	width: 100%;
 	aspect-ratio: 4 / 5;
+	overflow: hidden;
+	background: var(--paper-deep);
+}
+
+.admin-items img {
+	display: block;
+	width: 100%;
+	height: 100%;
 	object-fit: cover;
 	object-position: center;
 }
@@ -1202,6 +1209,7 @@ img {
 	flex-direction: column;
 	gap: 7px;
 	min-width: 0;
+	padding: 12px 0 0 14px;
 }
 
 .admin-item-copy strong {
@@ -1239,6 +1247,7 @@ img {
 }
 
 .admin-item-arrow {
+	padding: 12px 14px 0 0;
 	font-size: 1.1rem;
 }
 
@@ -2025,14 +2034,15 @@ img {
 		grid-template-columns: minmax(0, 1fr) auto;
 		gap: 8px;
 		min-height: 0;
-		padding: 0 10px 12px;
+		padding: 0 0 12px;
 	}
 
-	.admin-items img {
-		grid-column: 1 / -1;
-		width: calc(100% + 20px);
-		height: auto;
-		margin: 0 -10px 2px;
+	.admin-item-copy {
+		padding-left: 10px;
+	}
+
+	.admin-item-arrow {
+		padding-right: 10px;
 	}
 
 	.admin-item-status {

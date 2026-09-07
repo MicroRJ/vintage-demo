@@ -200,7 +200,9 @@
 					type="button"
 					onclick={() => selectItem(item)}
 				>
-					<img src={item.image} alt="" />
+					<span class="admin-item-media">
+						<img src={item.image} alt="" />
+					</span>
 					<span class="admin-item-copy">
 						<strong>{item.title}</strong>
 						<small>{item.category} · ${item.price.toLocaleString('en-US')}</small>
