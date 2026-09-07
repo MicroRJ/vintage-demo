@@ -173,6 +173,18 @@ img {
 	text-transform: uppercase;
 }
 
+.admin-app-shell {
+	display: grid;
+	grid-template-rows: auto auto minmax(0, 1fr);
+	height: 100svh;
+	overflow: hidden;
+}
+
+.admin-app-shell > main {
+	min-height: 0;
+	overflow: hidden;
+}
+
 .site-header {
 	position: relative;
 	z-index: 20;
@@ -1022,13 +1034,18 @@ img {
 .admin-shell {
 	display: grid;
 	grid-template-columns: minmax(440px, 0.82fr) minmax(560px, 1.18fr);
-	min-height: calc(100svh - 92px);
+	height: 100%;
+	min-height: 0;
+	overflow: hidden;
 	background: var(--paper-deep);
 }
 
 .admin-list-pane,
 .admin-editor-pane {
+	height: 100%;
+	min-height: 0;
 	min-width: 0;
+	overflow: hidden;
 }
 
 .admin-list-pane {
@@ -1120,6 +1137,7 @@ img {
 .admin-items {
 	flex: 1;
 	overflow-y: auto;
+	overscroll-behavior: contain;
 }
 
 .admin-items > button {
@@ -1223,6 +1241,8 @@ img {
 
 .admin-editor-pane {
 	background: var(--paper-deep);
+	overflow-y: auto;
+	overscroll-behavior: contain;
 }
 
 .editor-heading {
@@ -1726,11 +1746,13 @@ img {
 
 	.admin-shell {
 		display: block;
-		min-height: calc(100svh - 76px);
+		height: 100%;
+		min-height: 0;
 	}
 
 	.admin-list-pane {
-		min-height: calc(100svh - 76px);
+		height: 100%;
+		min-height: 0;
 		border-right: 0;
 	}
 
@@ -1744,7 +1766,8 @@ img {
 
 	.admin-shell.editor-open .admin-editor-pane {
 		display: block;
-		min-height: calc(100svh - 76px);
+		height: 100%;
+		min-height: 0;
 	}
 
 	.editor-back {

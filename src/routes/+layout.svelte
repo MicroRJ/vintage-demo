@@ -1,9 +1,11 @@
 <script>
+	import { page } from '$app/state';
 	import '../app.css';
 	import SiteFooter from '$lib/components/SiteFooter.svelte';
 	import SiteHeader from '$lib/components/SiteHeader.svelte';
 
 	let { children } = $props();
+	let isAdminRoute = $derived(page.url.pathname.startsWith('/admin'));
 </script>
 
 <svelte:head>
@@ -15,7 +17,9 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<div class="concept-banner">Independent website concept · Sample inventory · Not the official website</div>
-<SiteHeader />
-<main>{@render children()}</main>
-<SiteFooter />
+<div class:admin-app-shell={isAdminRoute}>
+	<div class="concept-banner">Independent website concept · Sample inventory · Not the official website</div>
+	<SiteHeader />
+	<main>{@render children()}</main>
+	{#if !isAdminRoute}<SiteFooter />{/if}
+</div>
