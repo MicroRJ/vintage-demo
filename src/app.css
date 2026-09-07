@@ -1034,7 +1034,7 @@ img {
 
 .admin-shell {
 	display: grid;
-	grid-template-columns: minmax(330px, 0.64fr) minmax(560px, 1.36fr);
+	grid-template-columns: minmax(0, 65fr) minmax(360px, 35fr);
 	height: 100%;
 	min-height: 0;
 	overflow: hidden;
@@ -1138,22 +1138,28 @@ img {
 }
 
 .admin-items {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+	align-content: start;
+	gap: 1px;
 	flex: 1;
+	padding: 1px;
 	overflow-y: auto;
 	overscroll-behavior: contain;
+	background: var(--line);
 }
 
 .admin-items > button {
+	position: relative;
 	display: grid;
-	grid-template-columns: 68px 1fr auto auto;
-	align-items: center;
-	gap: 18px;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: end;
+	gap: 14px;
 	width: 100%;
-	min-height: 88px;
-	padding: 10px 20px;
+	min-width: 0;
+	padding: 0 14px 14px;
 	border: 0;
-	border-bottom: 1px solid var(--line);
-	background: transparent;
+	background: var(--paper);
 	color: var(--ink);
 	cursor: pointer;
 	text-align: left;
@@ -1164,9 +1170,16 @@ img {
 	background: var(--paper-deep);
 }
 
+.admin-items > button.active {
+	box-shadow: inset 0 0 0 2px var(--rust);
+}
+
 .admin-items img {
-	width: 68px;
-	height: 64px;
+	grid-column: 1 / -1;
+	width: calc(100% + 28px);
+	height: auto;
+	margin: 0 -14px 2px;
+	aspect-ratio: 4 / 3;
 	object-fit: cover;
 }
 
@@ -1194,8 +1207,11 @@ img {
 }
 
 .admin-item-status {
+	position: absolute;
+	top: 10px;
+	right: 10px;
 	padding: 6px 8px;
-	background: var(--paper-deep);
+	background: rgba(239, 235, 224, 0.94);
 	color: var(--muted);
 	font-size: 0.58rem;
 	font-weight: 600;
@@ -1313,12 +1329,12 @@ img {
 	display: grid;
 	grid-template-columns: 1fr;
 	gap: 24px;
-	padding: 24px clamp(24px, 4vw, 64px) 125px;
+	padding: 24px clamp(20px, 2.5vw, 40px) 125px;
 }
 
 .editor-photo {
 	position: static;
-	width: min(100%, 440px);
+	width: min(100%, 360px);
 	margin-inline: auto;
 }
 
@@ -1436,12 +1452,12 @@ img {
 
 .form-grid {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: 1fr;
 	gap: 22px 18px;
 }
 
 .form-grid .span-two {
-	grid-column: 1 / -1;
+	grid-column: auto;
 }
 
 .form-grid input:not([type='checkbox']),
@@ -1987,16 +2003,22 @@ img {
 		padding: 12px 16px;
 	}
 
+	.admin-items {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
 	.admin-items > button {
-		grid-template-columns: 60px 1fr auto;
-		gap: 13px;
-		min-height: 80px;
-		padding: 8px 16px;
+		grid-template-columns: minmax(0, 1fr) auto;
+		gap: 8px;
+		min-height: 0;
+		padding: 0 10px 12px;
 	}
 
 	.admin-items img {
-		width: 60px;
-		height: 58px;
+		grid-column: 1 / -1;
+		width: calc(100% + 20px);
+		height: auto;
+		margin: 0 -10px 2px;
 	}
 
 	.admin-item-status {
