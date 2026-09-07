@@ -1226,8 +1226,61 @@ img {
 }
 
 .editor-heading {
-	align-items: start;
-	justify-content: flex-start;
+	position: sticky;
+	top: 0;
+	z-index: 10;
+	align-items: center;
+	justify-content: space-between;
+	background: var(--paper-deep);
+	transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.editor-heading.has-unsaved-changes {
+	border-bottom-color: var(--rust);
+	box-shadow: 0 6px 18px rgba(31, 37, 33, 0.08);
+}
+
+.editor-heading-copy {
+	flex: 1;
+	min-width: 0;
+}
+
+.editor-heading-copy h2 {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.editor-save-state {
+	margin: 10px 0 0;
+	color: var(--muted);
+	font-size: 0.62rem;
+	font-weight: 600;
+	letter-spacing: 0.09em;
+	text-transform: uppercase;
+}
+
+.editor-save-state::before {
+	content: '';
+	display: inline-block;
+	width: 7px;
+	height: 7px;
+	margin-right: 8px;
+	border-radius: 50%;
+	background: #70816a;
+}
+
+.editor-save-state.unsaved {
+	color: var(--rust);
+}
+
+.editor-save-state.unsaved::before,
+.editor-save-state.error::before {
+	background: var(--rust);
+}
+
+.editor-save-state.error {
+	color: #8e3829;
 }
 
 .editor-back {
@@ -1388,6 +1441,13 @@ img {
 
 .save-button {
 	min-width: 190px;
+}
+
+.editor-heading-save:disabled {
+	border: 1px solid var(--line);
+	background: transparent;
+	color: var(--muted);
+	cursor: default;
 }
 
 .share-button {
@@ -1667,8 +1727,21 @@ img {
 	}
 
 	.editor-heading {
-		display: block;
+		display: grid;
+		grid-template-columns: minmax(0, 1fr) auto;
+		align-items: end;
+		gap: 20px;
 		padding: 28px 20px;
+	}
+
+	.editor-heading .editor-back {
+		grid-column: 1 / -1;
+		justify-self: start;
+		margin-bottom: 12px;
+	}
+
+	.editor-heading-save {
+		min-width: 150px;
 	}
 
 	.editor-form {
@@ -1850,6 +1923,14 @@ img {
 	.editor-actions {
 		align-items: stretch;
 		flex-direction: column;
+	}
+
+	.editor-heading {
+		grid-template-columns: 1fr;
+	}
+
+	.editor-heading-save {
+		width: 100%;
 	}
 
 	.share-button {

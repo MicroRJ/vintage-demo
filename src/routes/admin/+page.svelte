@@ -27,12 +27,32 @@
 		featured: false
 	});
 
+	function itemFingerprint(item) {
+		return JSON.stringify([
+			item.title,
+			item.category,
+			item.era,
+			Number(item.price),
+			item.status,
+			item.image,
+			item.dimensions,
+			item.condition,
+			item.materials,
+			item.description,
+			item.story,
+			Boolean(item.featured)
+		]);
+	}
+
 	let query = $state('');
 	let selectedId = $state(initialItem?.id ?? '');
 	let draft = $state(initialItem ? structuredClone(initialItem) : blankItem());
+	let savedFingerprint = $state(initialItem ? itemFingerprint(initialItem) : '');
 	let notice = $state('');
+	let saveState = $state('idle');
 	let editorOpen = $state(Boolean(initialItem));
 	let creating = $state(false);
+	let isDirty = $derived(creating || itemFingerprint(draft) !== savedFingerprint);
 
 	let visibleItems = $derived.by(() => {
 		const needle = query.trim().toLowerCase();
@@ -44,17 +64,21 @@
 	function selectItem(item) {
 		selectedId = item.id;
 		draft = structuredClone(item);
+		savedFingerprint = itemFingerprint(item);
 		creating = false;
 		editorOpen = true;
 		notice = '';
+		saveState = 'idle';
 	}
 
 	function createItem() {
 		selectedId = '';
 		draft = blankItem();
+		savedFingerprint = '';
 		creating = true;
 		editorOpen = true;
 		notice = '';
+		saveState = 'idle';
 	}
 
 	function setStatus(nextStatus) {
@@ -68,29 +92,33 @@
 	}
 
 	function enhanceEditor() {
-		notice = 'Saving…';
+		notice = '';
+		saveState = 'saving';
 
 		return async ({ result, update }) => {
 			await update({ reset: false });
 
 			if (result.type !== 'success') {
 				notice = result.data?.message ?? 'The change could not be saved.';
+				saveState = 'error';
 				return;
 			}
-
-			notice = result.data.message;
 
 			if (result.data.operation === 'remove') {
 				selectedId = '';
 				draft = blankItem();
+				savedFingerprint = '';
 				editorOpen = false;
 				creating = false;
+				saveState = 'idle';
 				return;
 			}
 
 			selectedId = result.data.item.id;
 			draft = structuredClone(result.data.item);
+			savedFingerprint = itemFingerprint(result.data.item);
 			creating = false;
+			saveState = 'saved';
 		};
 	}
 
@@ -190,15 +218,36 @@
 
 	<section class="admin-editor-pane">
 		{#if editorOpen}
-			<header class="editor-heading">
+			<header class="editor-heading" class:has-unsaved-changes={isDirty}>
 				<button class="editor-back" type="button" onclick={() => (editorOpen = false)}>← Inventory</button>
-				<div>
+				<div class="editor-heading-copy">
 					<p class="eyebrow">{creating ? 'Add to catalog' : 'Edit catalog record'}</p>
 					<h2>{creating ? 'New piece' : draft.title}</h2>
+					<p
+						class="editor-save-state"
+						class:unsaved={isDirty}
+						class:error={saveState === 'error'}
+					>
+						{saveState === 'saving'
+							? 'Saving…'
+							: saveState === 'error'
+								? 'Save failed · changes remain'
+								: isDirty
+									? 'Unsaved changes'
+									: 'All changes saved'}
+					</p>
 				</div>
+				<button
+					class="save-button editor-heading-save"
+					type="submit"
+					form="item-editor"
+					disabled={!isDirty || saveState === 'saving'}
+				>
+					{saveState === 'saving' ? 'Saving…' : isDirty ? (creating ? 'Add piece' : 'Save changes') : 'Saved'}
+				</button>
 			</header>
 
-			<form class="editor-form" method="POST" action="?/save" use:enhance={enhanceEditor}>
+			<form id="item-editor" class="editor-form" method="POST" action="?/save" use:enhance={enhanceEditor}>
 				<input type="hidden" name="slug" value={selectedId} />
 				<input type="hidden" name="status" value={draft.status} />
 				<input type="hidden" name="image" value={draft.image} />
@@ -234,11 +283,12 @@
 					<p class="admin-notice">{notice}</p>
 				{/if}
 
+				{#if !creating}
 				<div class="editor-actions">
-					<button class="save-button" type="submit">Save to catalog</button>
-					{#if !creating}<button class="share-button" type="button" onclick={copyFacebookPost}>Copy Facebook post</button>{/if}
-					{#if !creating}<button class="delete-button" type="submit" formaction="?/remove" formnovalidate onclick={confirmRemoval}>Remove piece</button>{/if}
+					<button class="share-button" type="button" onclick={copyFacebookPost}>Copy Facebook post</button>
+					<button class="delete-button" type="submit" formaction="?/remove" formnovalidate onclick={confirmRemoval}>Remove piece</button>
 				</div>
+				{/if}
 			</form>
 		{:else}
 			<div class="editor-empty">
