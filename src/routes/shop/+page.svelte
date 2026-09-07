@@ -91,7 +91,7 @@
 	{#if results.length}
 		<div class="catalog-grid">
 			{#each results as item, index (item.id)}
-				<ItemCard {item} {index} />
+				<ItemCard {item} {index} isAdmin={data.isAdmin} />
 			{/each}
 		</div>
 	{:else}

@@ -418,6 +418,10 @@ img {
 	grid-column: span 3;
 }
 
+.item-card-media {
+	position: relative;
+}
+
 .item-image {
 	position: relative;
 	display: block;
@@ -439,6 +443,42 @@ img {
 
 .item-image:hover img {
 	transform: scale(1.025);
+}
+
+.item-card-edit {
+	position: absolute;
+	right: 14px;
+	bottom: 14px;
+	display: flex;
+	align-items: center;
+	gap: 24px;
+	min-height: 44px;
+	padding: 12px 14px;
+	background: var(--ink);
+	color: var(--white);
+	font-size: 0.64rem;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	text-transform: uppercase;
+	opacity: 0;
+	transform: translateY(6px);
+	pointer-events: none;
+	transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.item-card-media:hover .item-card-edit,
+.item-card-media:focus-within .item-card-edit {
+	opacity: 1;
+	transform: translateY(0);
+	pointer-events: auto;
+}
+
+@media (hover: none) {
+	.item-card-edit {
+		opacity: 1;
+		transform: none;
+		pointer-events: auto;
+	}
 }
 
 .item-status {

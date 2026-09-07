@@ -1,7 +1,8 @@
 import { listFeaturedItems } from '$lib/server/database.js';
 
-export async function load() {
+export async function load({ locals }) {
 	return {
-		featured: await listFeaturedItems()
+		featured: await listFeaturedItems(),
+		isAdmin: locals.isAdmin
 	};
 }

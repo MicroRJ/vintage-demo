@@ -42,11 +42,11 @@
 		<a class="text-link" href="/shop">View everything <span>↗</span></a>
 	</div>
 
-	<div class="featured-grid">
-		{#each data.featured as item, index (item.id)}
-			<ItemCard {item} {index} />
-		{/each}
-	</div>
+		<div class="featured-grid">
+			{#each data.featured as item, index (item.id)}
+				<ItemCard {item} {index} isAdmin={data.isAdmin} />
+			{/each}
+		</div>
 </section>
 
 <section class="split-section" id="visit">
