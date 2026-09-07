@@ -170,8 +170,8 @@
 	<section class="admin-list-pane">
 		<header class="admin-heading">
 			<div>
-				<p class="eyebrow">Private demonstration</p>
-				<h1>Inventory desk</h1>
+				<p class="eyebrow">Staff catalog</p>
+				<h1>Inventory</h1>
 			</div>
 			<div class="admin-heading-actions">
 				<form method="POST" action="/logout">
@@ -221,8 +221,8 @@
 			<header class="editor-heading" class:has-unsaved-changes={isDirty}>
 				<button class="editor-back" type="button" onclick={() => (editorOpen = false)}>← Inventory</button>
 				<div class="editor-heading-copy">
-					<p class="eyebrow">{creating ? 'Add to catalog' : 'Edit catalog record'}</p>
-					<h2>{creating ? 'New piece' : draft.title}</h2>
+					<p class="eyebrow">Inventory editor</p>
+					<h2>{creating ? 'New listing' : 'Edit listing'}</h2>
 					<p
 						class="editor-save-state"
 						class:unsaved={isDirty}
@@ -250,6 +250,11 @@
 					<p class="photo-button">Photo uploads are the next integration step</p>
 				</div>
 
+				<label class="editor-title-field">
+					<span>Title</span>
+					<input name="title" required bind:value={draft.title} />
+				</label>
+
 				<div class="quick-status">
 					<span>Listing status</span>
 					<div>
@@ -260,7 +265,6 @@
 				</div>
 
 				<div class="form-grid">
-					<label class="span-two"><span>Title</span><input name="title" required bind:value={draft.title} /></label>
 					<label><span>Category</span><input name="category" required bind:value={draft.category} /></label>
 					<label><span>Era</span><input name="era" bind:value={draft.era} placeholder="Mid-century, 1920s…" /></label>
 					<label><span>Price</span><div class="money-input"><span>$</span><input name="price" type="number" min="0" step="1" bind:value={draft.price} /></div></label>
