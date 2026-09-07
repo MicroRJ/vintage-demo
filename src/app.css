@@ -1318,15 +1318,39 @@ img {
 
 .editor-photo {
 	position: static;
+	width: min(100%, 440px);
+	margin-inline: auto;
 }
 
-.editor-photo img {
+.editor-photo-preview {
+	position: relative;
+	isolation: isolate;
 	width: 100%;
-	height: auto;
-	max-height: min(60svh, 680px);
-	object-fit: contain;
-	object-position: left center;
+	aspect-ratio: 3 / 4;
+	overflow: hidden;
 	background: #d6d0c3;
+}
+
+.editor-photo-backdrop,
+.editor-photo-image {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.editor-photo-backdrop {
+	z-index: 0;
+	object-fit: cover;
+	filter: blur(28px) saturate(0.72) brightness(0.78);
+	transform: scale(1.12);
+	pointer-events: none;
+}
+
+.editor-photo-image {
+	z-index: 1;
+	object-fit: contain;
+	object-position: center;
 }
 
 .photo-button {
