@@ -13,7 +13,8 @@
 
 <article class="detail-shell">
 	<div class="detail-image">
-		<img src={item.image} alt={item.title} />
+		<img class="detail-image-backdrop" src={item.image} alt="" aria-hidden="true" />
+		<img class="detail-image-photo" src={item.image} alt={item.title} />
 		<span class:item-sold={item.status === 'Sold'} class="detail-status">{item.status}</span>
 	</div>
 

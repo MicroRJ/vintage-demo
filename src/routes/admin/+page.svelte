@@ -250,7 +250,7 @@
 						<img class="editor-photo-backdrop" src={draft.image} alt="" aria-hidden="true" />
 						<img class="editor-photo-image" src={draft.image} alt="Current item preview" />
 					</div>
-					<p class="photo-button">Photo uploads are the next integration step</p>
+					<p class="photo-button">Listings use a 4:5 thumbnail crop. Keep the piece centered in the photo.</p>
 				</div>
 
 				<label class="editor-title-field">
