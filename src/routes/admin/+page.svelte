@@ -227,6 +227,7 @@
 						class="editor-save-state"
 						class:unsaved={isDirty}
 						class:error={saveState === 'error'}
+						aria-live="polite"
 					>
 						{saveState === 'saving'
 							? 'Saving…'
@@ -237,14 +238,6 @@
 									: 'All changes saved'}
 					</p>
 				</div>
-				<button
-					class="save-button editor-heading-save"
-					type="submit"
-					form="item-editor"
-					disabled={!isDirty || saveState === 'saving'}
-				>
-					{saveState === 'saving' ? 'Saving…' : isDirty ? (creating ? 'Add piece' : 'Save changes') : 'Saved'}
-				</button>
 			</header>
 
 			<form id="item-editor" class="editor-form" method="POST" action="?/save" use:enhance={enhanceEditor}>
@@ -290,6 +283,17 @@
 				</div>
 				{/if}
 			</form>
+
+			<button
+				class="save-button floating-save-button"
+				class:active={isDirty}
+				type="submit"
+				form="item-editor"
+				disabled={!isDirty || saveState === 'saving'}
+			>
+				<span>{saveState === 'saving' ? 'Saving…' : isDirty ? (creating ? 'Add piece' : 'Save changes') : 'Saved'}</span>
+				<span aria-hidden="true">{isDirty ? '↑' : '✓'}</span>
+			</button>
 		{:else}
 			<div class="editor-empty">
 				<p class="eyebrow">Catalog controls</p>

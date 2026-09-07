@@ -1229,8 +1229,8 @@ img {
 	position: sticky;
 	top: 0;
 	z-index: 10;
-	align-items: center;
-	justify-content: space-between;
+	align-items: start;
+	justify-content: flex-start;
 	background: var(--paper-deep);
 	transition: border-color 160ms ease, box-shadow 160ms ease;
 }
@@ -1442,11 +1442,38 @@ img {
 	min-width: 190px;
 }
 
-.editor-heading-save:disabled {
+.floating-save-button {
+	position: fixed;
+	right: 24px;
+	bottom: max(24px, env(safe-area-inset-bottom));
+	z-index: 40;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 32px;
+	min-width: 190px;
+	min-height: 54px;
+	padding: 15px 20px;
+	border: 1px solid rgba(248, 246, 239, 0.22);
+	border-radius: 999px;
+	box-shadow: 0 12px 35px rgba(31, 37, 33, 0.2);
+	transition: background 160ms ease, color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.floating-save-button.active {
+	box-shadow: 0 14px 38px rgba(158, 72, 46, 0.32);
+}
+
+.floating-save-button.active:hover {
+	transform: translateY(-2px);
+}
+
+.floating-save-button:disabled {
 	border: 1px solid var(--line);
-	background: transparent;
+	background: var(--paper);
 	color: var(--muted);
 	cursor: default;
+	box-shadow: 0 8px 24px rgba(31, 37, 33, 0.1);
 }
 
 .share-button {
@@ -1726,10 +1753,7 @@ img {
 	}
 
 	.editor-heading {
-		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto;
-		align-items: end;
-		gap: 20px;
+		display: block;
 		padding: 28px 20px;
 	}
 
@@ -1739,13 +1763,9 @@ img {
 		margin-bottom: 12px;
 	}
 
-	.editor-heading-save {
-		min-width: 150px;
-	}
-
 	.editor-form {
 		grid-template-columns: 1fr;
-		padding: 25px 20px 70px;
+		padding: 25px 20px 125px;
 	}
 
 	.editor-photo {
@@ -1924,12 +1944,11 @@ img {
 		flex-direction: column;
 	}
 
-	.editor-heading {
-		grid-template-columns: 1fr;
-	}
-
-	.editor-heading-save {
-		width: 100%;
+	.floating-save-button {
+		right: 16px;
+		bottom: max(16px, env(safe-area-inset-bottom));
+		left: 16px;
+		width: auto;
 	}
 
 	.share-button {
