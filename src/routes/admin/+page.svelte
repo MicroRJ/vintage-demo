@@ -4,6 +4,12 @@
 
 	let { data } = $props();
 
+	function getInitialItem() {
+		return data.items.find((item) => item.id === data.editId);
+	}
+
+	const initialItem = getInitialItem();
+
 	const blankItem = () => ({
 		id: '',
 		title: '',
@@ -22,10 +28,10 @@
 	});
 
 	let query = $state('');
-	let selectedId = $state('');
-	let draft = $state(blankItem());
+	let selectedId = $state(initialItem?.id ?? '');
+	let draft = $state(initialItem ? structuredClone(initialItem) : blankItem());
 	let notice = $state('');
-	let editorOpen = $state(false);
+	let editorOpen = $state(Boolean(initialItem));
 	let creating = $state(false);
 
 	let visibleItems = $derived.by(() => {

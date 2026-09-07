@@ -51,11 +51,12 @@ function readItem(formData) {
 	};
 }
 
-export async function load({ locals }) {
+export async function load({ locals, url }) {
 	requireAdmin(locals);
 
 	return {
-		items: await listItems()
+		items: await listItems(),
+		editId: url.searchParams.get('item') ?? ''
 	};
 }
 

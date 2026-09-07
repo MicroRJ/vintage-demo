@@ -35,6 +35,16 @@
 			<p>{item.story}</p>
 		</div>
 
+		{#if data.isAdmin}
+			<div class="staff-item-action">
+				<div>
+					<p class="eyebrow">Staff controls</p>
+					<p>You are signed in. Update this listing without searching for it again.</p>
+				</div>
+				<a href={`/admin?item=${encodeURIComponent(item.id)}`}>Edit listing <span aria-hidden="true">→</span></a>
+			</div>
+		{/if}
+
 		{#if item.status === 'Sold'}
 			<div class="sold-note">
 				<strong>This piece has been sold.</strong>
