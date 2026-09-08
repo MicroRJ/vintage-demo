@@ -281,13 +281,39 @@
 								: 'All changes saved'}
 				</p>
 			</div>
+			<div class="editor-listing-actions">
+				<label class="feature-toggle" title="Feature this piece on the home page when saved">
+					<input
+						name="featured"
+						value="true"
+						type="checkbox"
+						form="item-editor"
+						aria-label="Feature this piece on the home page"
+						bind:checked={draft.featured}
+						disabled={saveState === 'saving'}
+					/>
+					<span>Feature</span>
+				</label>
+				{#if !creating}
+					<button class="editor-toolbar-button" type="button" aria-label="Copy Facebook post" onclick={copyFacebookPost}>Copy post</button>
+					<button
+						class="editor-toolbar-button editor-remove-button"
+						type="submit"
+						form="item-editor"
+						formaction="?/remove"
+						formnovalidate
+						disabled={processingImage || saveState === 'saving'}
+						onclick={confirmRemoval}
+					>Remove</button>
+				{/if}
+			</div>
 			<div class="editor-heading-actions">
 				<button
 					class="save-button editor-header-save"
 					class:active={isDirty}
 					type="submit"
 					form="item-editor"
-					disabled={!isDirty || saveState === 'saving'}
+					disabled={!isDirty || processingImage || saveState === 'saving'}
 				>
 					<span class="desktop-save-label">{saveState === 'saving' ? 'Saving…' : creating ? 'Add piece' : 'Save changes'}</span>
 					<span class="mobile-save-label">{saveState === 'saving' ? 'Saving…' : creating ? 'Add' : 'Save'}</span>
@@ -297,6 +323,9 @@
 					<button class="logout-button" type="submit">Log out</button>
 				</form>
 			</div>
+			{#if notice}
+				<p class="admin-notice editor-toolbar-notice" role="status">{notice}</p>
+			{/if}
 		</header>
 
 		<form id="item-editor" class="editor-form editor-detail-shell" method="POST" action="?/save" use:enhance={enhanceEditor}>
@@ -307,10 +336,10 @@
 			<div class="editor-photo editor-detail-image">
 				<img class="detail-image-backdrop" src={previewImage} alt="" aria-hidden="true" />
 				<img class="detail-image-photo" src={previewImage} alt="Current item preview" />
-				<span class:item-sold={draft.status === 'Sold'} class="detail-status">{draft.status}</span>
 				<div class="editor-photo-controls">
-					<label class="photo-button">
-						<span>{processingImage ? 'Preparing and uploading…' : 'Replace photo'}</span>
+					<span class:item-sold={draft.status === 'Sold'} class="detail-status">{draft.status}</span>
+					<label class="photo-button" class:uploading={processingImage} aria-busy={processingImage}>
+						<span>{processingImage ? 'Uploading…' : 'Replace photo'}</span>
 						<input
 							type="file"
 							accept="image/jpeg,image/png,image/webp"
@@ -320,7 +349,6 @@
 							onchange={chooseImage}
 						/>
 					</label>
-					<p class="photo-guidance">Photos resize automatically. Keep the piece centered for the catalog crop.</p>
 					{#if imageError}<p class="photo-error" role="alert">{imageError}</p>{/if}
 				</div>
 			</div>
@@ -366,19 +394,6 @@
 					<span>Story / provenance</span>
 					<textarea name="story" rows="4" bind:value={draft.story}></textarea>
 				</label>
-
-				<label class="feature-toggle"><input name="featured" value="true" type="checkbox" bind:checked={draft.featured} /><span>Feature this piece on the home page</span></label>
-
-				{#if notice}
-					<p class="admin-notice">{notice}</p>
-				{/if}
-
-				{#if !creating}
-				<div class="editor-actions">
-					<button class="share-button" type="button" onclick={copyFacebookPost}>Copy Facebook post</button>
-					<button class="delete-button" type="submit" formaction="?/remove" formnovalidate onclick={confirmRemoval}>Remove piece</button>
-				</div>
-				{/if}
 			</div>
 		</form>
 		<form class="editor-mobile-logout" method="POST" action="/logout">
