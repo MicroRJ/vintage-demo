@@ -56,6 +56,7 @@
 	let creating = $state(false);
 	let pendingImageFile = $state(null);
 	let localPreviewUrl = $state('');
+	let imageInput = $state();
 	let processingImage = $state(false);
 	let imageError = $state('');
 	let previewImage = $derived(localPreviewUrl || draft.image);
@@ -96,6 +97,7 @@
 
 	function clearPendingImage() {
 		if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl);
+		if (imageInput) imageInput.value = '';
 		localPreviewUrl = '';
 		pendingImageFile = null;
 		processingImage = false;
@@ -165,6 +167,9 @@
 
 			const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-z0-9_-]+/gi, '-') || 'inventory-photo';
 			const processedFile = new File([blob], `${baseName}.jpg`, { type: 'image/jpeg' });
+			const transfer = new DataTransfer();
+			transfer.items.add(processedFile);
+			input.files = transfer.files;
 
 			if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl);
 			localPreviewUrl = URL.createObjectURL(processedFile);
@@ -172,9 +177,9 @@
 			notice = 'Photo ready. Save the listing to publish it.';
 		} catch (error) {
 			imageError = error instanceof Error ? error.message : 'That image could not be processed.';
+			input.value = '';
 		} finally {
 			processingImage = false;
-			input.value = '';
 		}
 	}
 
@@ -361,9 +366,11 @@
 						<span>{processingImage ? 'Preparing photo…' : pendingImageFile ? 'Choose a different photo' : 'Choose photo'}</span>
 						<input
 							type="file"
+							name="imageFile"
 							accept="image/jpeg,image/png,image/webp"
 							capture="environment"
 							disabled={processingImage}
+							bind:this={imageInput}
 							onchange={chooseImage}
 						/>
 					</label>
