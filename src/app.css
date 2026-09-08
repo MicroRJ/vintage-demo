@@ -1049,6 +1049,7 @@ img {
 .detail-image {
 	position: relative;
 	height: clamp(360px, calc(100svh - 92px), 680px);
+	overflow: hidden;
 	background: var(--paper-deep);
 }
 
