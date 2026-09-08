@@ -8,6 +8,7 @@
 		<a href="/#visit">Visit the shop</a>
 		<a href="mailto:theroomexchange@gmail.com">Email the store</a>
 		<a href="https://www.facebook.com/theroomexchange" target="_blank" rel="noreferrer">Facebook</a>
+		<a href="/login?next=/shop">Admin login</a>
 	</div>
 	<div class="footer-small">
 		<p>Independent concept using sample inventory. Not affiliated with The Room Exchange.</p>
