@@ -54,13 +54,12 @@
 	let saveState = $state('idle');
 	let editorOpen = $state(Boolean(initialItem));
 	let creating = $state(false);
-	let pendingImageFile = $state(null);
 	let localPreviewUrl = $state('');
 	let imageInput = $state();
 	let processingImage = $state(false);
 	let imageError = $state('');
 	let previewImage = $derived(localPreviewUrl || draft.image);
-	let isDirty = $derived(creating || Boolean(pendingImageFile) || itemFingerprint(draft) !== savedFingerprint);
+	let isDirty = $derived(creating || itemFingerprint(draft) !== savedFingerprint);
 
 	let visibleItems = $derived.by(() => {
 		const needle = query.trim().toLowerCase();
@@ -99,7 +98,6 @@
 		if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl);
 		if (imageInput) imageInput.value = '';
 		localPreviewUrl = '';
-		pendingImageFile = null;
 		processingImage = false;
 		imageError = '';
 	}
@@ -167,16 +165,26 @@
 
 			const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-z0-9_-]+/gi, '-') || 'inventory-photo';
 			const processedFile = new File([blob], `${baseName}.jpg`, { type: 'image/jpeg' });
-			const transfer = new DataTransfer();
-			transfer.items.add(processedFile);
-			input.files = transfer.files;
-
 			if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl);
 			localPreviewUrl = URL.createObjectURL(processedFile);
-			pendingImageFile = processedFile;
-			notice = 'Photo ready. Save the listing to publish it.';
+
+			const uploadData = new FormData();
+			uploadData.set('imageFile', processedFile, processedFile.name);
+			const response = await fetch('/admin/photo', { method: 'POST', body: uploadData });
+			const result = await response.json();
+			if (!response.ok || !result.url) {
+				throw new Error(result.message || 'The photo could not be uploaded.');
+			}
+
+			draft.image = result.url;
+			URL.revokeObjectURL(localPreviewUrl);
+			localPreviewUrl = '';
+			input.value = '';
+			notice = 'Photo uploaded. Save the listing to publish it.';
 		} catch (error) {
 			imageError = error instanceof Error ? error.message : 'That image could not be processed.';
+			if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl);
+			localPreviewUrl = '';
 			input.value = '';
 		} finally {
 			processingImage = false;
@@ -189,15 +197,11 @@
 		}
 	}
 
-	function enhanceEditor({ formData, cancel }) {
+	function enhanceEditor({ cancel }) {
 		if (processingImage) {
 			cancel();
 			imageError = 'Wait for the photo to finish processing before saving.';
 			return;
-		}
-
-		if (pendingImageFile) {
-			formData.set('imageFile', pendingImageFile, pendingImageFile.name);
 		}
 
 		notice = '';
@@ -363,10 +367,9 @@
 						<img class="editor-photo-image" src={previewImage} alt="Current item preview" />
 					</div>
 					<label class="photo-button">
-						<span>{processingImage ? 'Preparing photo…' : pendingImageFile ? 'Choose a different photo' : 'Choose photo'}</span>
+						<span>{processingImage ? 'Preparing and uploading…' : 'Choose photo'}</span>
 						<input
 							type="file"
-							name="imageFile"
 							accept="image/jpeg,image/png,image/webp"
 							capture="environment"
 							disabled={processingImage}
