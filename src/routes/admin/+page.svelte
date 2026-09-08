@@ -69,6 +69,10 @@
 		draft.status = nextStatus;
 	}
 
+	function updateTitle(event) {
+		draft.title = event.currentTarget.value.replace(/[\r\n]+/g, ' ');
+	}
+
 	function clearPendingImage() {
 		if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl);
 		if (imageInput) imageInput.value = '';
@@ -259,41 +263,54 @@
 	<section class="admin-editor-pane">
 		<header class="editor-heading" class:has-unsaved-changes={isDirty}>
 			<a class="editor-back" href="/shop"><Icon name="arrow-left" /> Inventory</a>
-				<div class="editor-heading-copy">
-					<p class="eyebrow">Inventory editor</p>
-					<h2>{creating ? 'New listing' : 'Edit listing'}</h2>
-					<p
-						class="editor-save-state"
-						class:unsaved={isDirty}
-						class:error={saveState === 'error'}
-						aria-live="polite"
-					>
-						{saveState === 'saving'
-							? 'Saving…'
-							: saveState === 'error'
-								? 'Save failed · changes remain'
-								: isDirty
-									? 'Unsaved changes'
+			<div class="editor-heading-copy">
+				<p class="eyebrow">Inventory editor</p>
+				<h2>{creating ? 'New listing' : 'Edit listing'}</h2>
+				<p
+					class="editor-save-state"
+					class:unsaved={isDirty}
+					class:error={saveState === 'error'}
+					aria-live="polite"
+				>
+					{saveState === 'saving'
+						? 'Saving…'
+						: saveState === 'error'
+							? 'Save failed · changes remain'
+							: isDirty
+								? 'Unsaved changes'
 								: 'All changes saved'}
-					</p>
-				</div>
-			<form class="editor-logout" method="POST" action="/logout">
-				<button class="logout-button" type="submit">Log out</button>
-			</form>
+				</p>
+			</div>
+			<div class="editor-heading-actions">
+				<button
+					class="save-button editor-header-save"
+					class:active={isDirty}
+					type="submit"
+					form="item-editor"
+					disabled={!isDirty || saveState === 'saving'}
+				>
+					<span class="desktop-save-label">{saveState === 'saving' ? 'Saving…' : creating ? 'Add piece' : 'Save changes'}</span>
+					<span class="mobile-save-label">{saveState === 'saving' ? 'Saving…' : creating ? 'Add' : 'Save'}</span>
+					<Icon name={isDirty ? 'upload' : 'check'} />
+				</button>
+				<form class="editor-logout" method="POST" action="/logout">
+					<button class="logout-button" type="submit">Log out</button>
+				</form>
+			</div>
 		</header>
 
-		<form id="item-editor" class="editor-form" method="POST" action="?/save" use:enhance={enhanceEditor}>
-				<input type="hidden" name="slug" value={selectedId} />
-				<input type="hidden" name="status" value={draft.status} />
-				<input type="hidden" name="existingImage" value={draft.image} />
+		<form id="item-editor" class="editor-form editor-detail-shell" method="POST" action="?/save" use:enhance={enhanceEditor}>
+			<input type="hidden" name="slug" value={selectedId} />
+			<input type="hidden" name="status" value={draft.status} />
+			<input type="hidden" name="existingImage" value={draft.image} />
 
-				<div class="editor-photo">
-					<div class="editor-photo-preview">
-						<img class="editor-photo-backdrop" src={previewImage} alt="" aria-hidden="true" />
-						<img class="editor-photo-image" src={previewImage} alt="Current item preview" />
-					</div>
+			<div class="editor-photo editor-detail-image">
+				<img class="detail-image-backdrop" src={previewImage} alt="" aria-hidden="true" />
+				<img class="detail-image-photo" src={previewImage} alt="Current item preview" />
+				<span class:item-sold={draft.status === 'Sold'} class="detail-status">{draft.status}</span>
+				<div class="editor-photo-controls">
 					<label class="photo-button">
-						<span>{processingImage ? 'Preparing and uploading…' : 'Choose photo'}</span>
+						<span>{processingImage ? 'Preparing and uploading…' : 'Replace photo'}</span>
 						<input
 							type="file"
 							accept="image/jpeg,image/png,image/webp"
@@ -303,35 +320,54 @@
 							onchange={chooseImage}
 						/>
 					</label>
-					<p class="photo-guidance">Photos are resized automatically. Keep the piece centered for the 4:5 catalog crop.</p>
+					<p class="photo-guidance">Photos resize automatically. Keep the piece centered for the catalog crop.</p>
 					{#if imageError}<p class="photo-error" role="alert">{imageError}</p>{/if}
+				</div>
+			</div>
+
+			<div class="editor-detail-copy">
+				<div class="editor-classification">
+					<label><span>Category</span><input name="category" required bind:value={draft.category} /></label>
+					<label><span>Era</span><input name="era" bind:value={draft.era} placeholder="Mid-century, 1920s…" /></label>
 				</div>
 
 				<label class="editor-title-field">
 					<span>Title</span>
-					<input name="title" required bind:value={draft.title} />
+					<textarea name="title" required rows="2" value={draft.title} oninput={updateTitle}></textarea>
 				</label>
 
-				<div class="quick-status">
-					<span>Listing status</span>
-					<div>
-						{#each ['Available', 'Held', 'Sold'] as option}
-							<button class:active={draft.status === option} type="button" onclick={() => setStatus(option)}>{option}</button>
-						{/each}
+				<div class="editor-price-status">
+					<label class="editor-price-field">
+						<span>Price</span>
+						<div class="money-input"><span>$</span><input name="price" type="number" min="0" step="1" bind:value={draft.price} /></div>
+					</label>
+					<div class="quick-status">
+						<span>Listing status</span>
+						<div>
+							{#each ['Available', 'Held', 'Sold'] as option}
+								<button class:active={draft.status === option} type="button" onclick={() => setStatus(option)}>{option}</button>
+							{/each}
+						</div>
 					</div>
 				</div>
 
-				<div class="form-grid">
-					<label><span>Category</span><input name="category" required bind:value={draft.category} /></label>
-					<label><span>Era</span><input name="era" bind:value={draft.era} placeholder="Mid-century, 1920s…" /></label>
-					<label><span>Price</span><div class="money-input"><span>$</span><input name="price" type="number" min="0" step="1" bind:value={draft.price} /></div></label>
+				<label class="editor-description-field">
+					<span>Short description</span>
+					<textarea name="description" rows="3" bind:value={draft.description}></textarea>
+				</label>
+
+				<div class="editor-specs">
+					<label><span>Dimensions</span><input name="dimensions" bind:value={draft.dimensions} placeholder="48 W × 24 D × 30 H in." /></label>
 					<label><span>Condition</span><select name="condition" bind:value={draft.condition}><option>Excellent</option><option>Very good</option><option>Good</option><option>Fair</option><option>As found</option></select></label>
-					<label class="span-two"><span>Dimensions</span><input name="dimensions" bind:value={draft.dimensions} placeholder="48 W × 24 D × 30 H in." /></label>
-					<label class="span-two"><span>Materials</span><input name="materials" bind:value={draft.materials} /></label>
-					<label class="span-two"><span>Short description</span><textarea name="description" rows="3" bind:value={draft.description}></textarea></label>
-					<label class="span-two"><span>Story / provenance</span><textarea name="story" rows="3" bind:value={draft.story}></textarea></label>
-					<label class="feature-toggle span-two"><input name="featured" value="true" type="checkbox" bind:checked={draft.featured} /><span>Feature this piece on the home page</span></label>
+					<label><span>Materials</span><input name="materials" bind:value={draft.materials} /></label>
 				</div>
+
+				<label class="editor-story-field">
+					<span>Story / provenance</span>
+					<textarea name="story" rows="4" bind:value={draft.story}></textarea>
+				</label>
+
+				<label class="feature-toggle"><input name="featured" value="true" type="checkbox" bind:checked={draft.featured} /><span>Feature this piece on the home page</span></label>
 
 				{#if notice}
 					<p class="admin-notice">{notice}</p>
@@ -343,17 +379,10 @@
 					<button class="delete-button" type="submit" formaction="?/remove" formnovalidate onclick={confirmRemoval}>Remove piece</button>
 				</div>
 				{/if}
+			</div>
 		</form>
-
-		<button
-			class="save-button floating-save-button"
-			class:active={isDirty}
-			type="submit"
-			form="item-editor"
-			disabled={!isDirty || saveState === 'saving'}
-		>
-			<span>{saveState === 'saving' ? 'Saving…' : isDirty ? (creating ? 'Add piece' : 'Save changes') : 'Saved'}</span>
-			<Icon name={isDirty ? 'upload' : 'check'} />
-		</button>
+		<form class="editor-mobile-logout" method="POST" action="/logout">
+			<button class="logout-button" type="submit">Log out of staff mode</button>
+		</form>
 	</section>
 </div>
