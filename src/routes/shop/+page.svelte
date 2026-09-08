@@ -93,6 +93,11 @@
 	function toggleViewMode() {
 		viewMode = viewMode === 'gallery' ? 'grid' : 'gallery';
 	}
+
+	function openSiteMenu() {
+		closeMobileControls();
+		window.dispatchEvent(new CustomEvent('open-mobile-site-menu'));
+	}
 </script>
 
 <svelte:head>
@@ -223,10 +228,24 @@
 	</div>
 
 <nav class="mobile-marketplace-bar" aria-label="Inventory controls">
-	<div class="mobile-result-count"><strong>{results.length}</strong><span>{results.length === 1 ? 'item' : 'items'}</span></div>
+	<button type="button" onclick={openSiteMenu}>
+		<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+		<span>Menu</span>
+	</button>
 	<button type="button" aria-expanded={filtersOpen} aria-controls="mobile-inventory-filters" onclick={openFilters}>
+		<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="m16 16 4 4" /></svg>
 		<span>Search{activeFilterCount ? ` (${activeFilterCount})` : ''}</span>
 	</button>
-	<button type="button" aria-expanded={sortOpen} onclick={toggleSort}><span>Sort</span></button>
-	<button type="button" onclick={toggleViewMode}><span>{viewMode === 'gallery' ? 'Grid' : 'Gallery'}</span></button>
+	<button type="button" aria-expanded={sortOpen} onclick={toggleSort}>
+		<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4v16m0-16L4.5 7.5M8 4l3.5 3.5M16 20V4m0 16-3.5-3.5M16 20l3.5-3.5" /></svg>
+		<span>Sort</span>
+	</button>
+	<button type="button" onclick={toggleViewMode}>
+		{#if viewMode === 'gallery'}
+			<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" /><rect x="14" y="4" width="6" height="6" /><rect x="4" y="14" width="6" height="6" /><rect x="14" y="14" width="6" height="6" /></svg>
+		{:else}
+			<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" /><path d="m5.5 17 4.5-4.5 3 3 2.5-2.5 3 3M15.5 9h.01" /></svg>
+		{/if}
+		<span>{viewMode === 'gallery' ? 'Grid' : 'Gallery'}</span>
+	</button>
 </nav>
