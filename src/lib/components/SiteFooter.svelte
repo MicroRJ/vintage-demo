@@ -1,3 +1,9 @@
+<script>
+	import { page } from '$app/state';
+
+	let isAdmin = $derived(Boolean(page.data.isAdmin));
+</script>
+
 <footer class="site-footer">
 	<div>
 		<a class="footer-mark" href="/">The Room Exchange</a>
@@ -8,7 +14,13 @@
 		<a href="/#visit">Visit the shop</a>
 		<a href="mailto:theroomexchange@gmail.com">Email the store</a>
 		<a href="https://www.facebook.com/theroomexchange" target="_blank" rel="noreferrer">Facebook</a>
-		<a href="/login?next=/shop">Admin login</a>
+		{#if isAdmin}
+			<form method="POST" action="/logout">
+				<button class="footer-logout" type="submit">Log out</button>
+			</form>
+		{:else}
+			<a href="/login?next=/shop">Admin login</a>
+		{/if}
 	</div>
 	<div class="footer-small">
 		<p>Independent concept using sample inventory. Not affiliated with The Room Exchange.</p>

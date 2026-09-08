@@ -2113,6 +2113,17 @@ img {
 	text-transform: uppercase;
 }
 
+.footer-logout {
+	padding: 0;
+	border: 0;
+	background: transparent;
+	color: inherit;
+	letter-spacing: inherit;
+	text-align: left;
+	text-transform: inherit;
+	cursor: pointer;
+}
+
 .footer-small {
 	grid-column: 1 / -1;
 	display: flex;
