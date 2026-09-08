@@ -222,7 +222,7 @@
 <nav class="mobile-marketplace-bar" aria-label="Inventory controls">
 	<div class="mobile-result-count"><strong>{results.length}</strong><span>{results.length === 1 ? 'item' : 'items'}</span></div>
 	<button type="button" aria-expanded={filtersOpen} aria-controls="mobile-inventory-filters" onclick={openFilters}>
-		<span>Filters{activeFilterCount ? ` (${activeFilterCount})` : ''}</span>
+		<span>Search{activeFilterCount ? ` (${activeFilterCount})` : ''}</span>
 	</button>
 	<button type="button" aria-expanded={sortOpen} onclick={toggleSort}><span>Sort</span></button>
 	<button type="button" onclick={toggleViewMode}><span>{viewMode === 'gallery' ? 'Grid' : 'Gallery'}</span></button>
