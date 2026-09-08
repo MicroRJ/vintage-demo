@@ -3,5 +3,5 @@ import { clearSessionCookie } from '$lib/server/auth.js';
 
 export function POST({ cookies }) {
 	clearSessionCookie(cookies);
-	redirect(303, '/login');
+	redirect(303, '/shop');
 }

@@ -1,5 +1,6 @@
 <script>
 	import { enhance } from '$app/forms';
+	import { goto } from '$app/navigation';
 	import Icon from '$lib/components/Icon.svelte';
 	import { formatPrice } from '$lib/items.js';
 
@@ -8,7 +9,11 @@
 	const maxImageBytes = 3 * 1024 * 1024;
 
 	function getInitialItem() {
-		return data.items.find((item) => item.id === data.editId);
+		return data.item;
+	}
+
+	function getInitialCreating() {
+		return data.createNew;
 	}
 
 	const initialItem = getInitialItem();
@@ -47,49 +52,18 @@
 		]);
 	}
 
-	let query = $state('');
 	let selectedId = $state(initialItem?.id ?? '');
 	let draft = $state(initialItem ? structuredClone(initialItem) : blankItem());
 	let savedFingerprint = $state(initialItem ? itemFingerprint(initialItem) : '');
 	let notice = $state('');
 	let saveState = $state('idle');
-	let editorOpen = $state(Boolean(initialItem));
-	let creating = $state(false);
+	let creating = $state(getInitialCreating());
 	let localPreviewUrl = $state('');
 	let imageInput = $state();
 	let processingImage = $state(false);
 	let imageError = $state('');
 	let previewImage = $derived(localPreviewUrl || draft.image);
 	let isDirty = $derived(creating || itemFingerprint(draft) !== savedFingerprint);
-
-	let visibleItems = $derived.by(() => {
-		const needle = query.trim().toLowerCase();
-		return data.items
-			.filter((item) => !needle || [item.title, item.category, item.status].some((field) => field.toLowerCase().includes(needle)))
-			.toSorted((a, b) => b.dateAdded.localeCompare(a.dateAdded));
-	});
-
-	function selectItem(item) {
-		clearPendingImage();
-		selectedId = item.id;
-		draft = structuredClone(item);
-		savedFingerprint = itemFingerprint(item);
-		creating = false;
-		editorOpen = true;
-		notice = '';
-		saveState = 'idle';
-	}
-
-	function createItem() {
-		clearPendingImage();
-		selectedId = '';
-		draft = blankItem();
-		savedFingerprint = '';
-		creating = true;
-		editorOpen = true;
-		notice = '';
-		saveState = 'idle';
-	}
 
 	function setStatus(nextStatus) {
 		draft.status = nextStatus;
@@ -219,21 +193,21 @@
 
 			if (result.data.operation === 'remove') {
 				clearPendingImage();
-				selectedId = '';
-				draft = blankItem();
-				savedFingerprint = '';
-				editorOpen = false;
-				creating = false;
-				saveState = 'idle';
+				await goto('/shop');
 				return;
 			}
 
+			const wasCreating = creating;
 			selectedId = result.data.item.id;
 			clearPendingImage();
 			draft = structuredClone(result.data.item);
 			savedFingerprint = itemFingerprint(result.data.item);
 			creating = false;
 			saveState = 'saved';
+
+			if (wasCreating) {
+				await goto(`/admin?item=${encodeURIComponent(selectedId)}`, { replaceState: true });
+			}
 		};
 	}
 
@@ -281,62 +255,10 @@
 	<title>Inventory Desk — The Room Exchange Concept</title>
 </svelte:head>
 
-<div class="admin-shell" class:editor-open={editorOpen}>
-	<section class="admin-list-pane">
-		<header class="admin-heading">
-			<div>
-				<p class="eyebrow">Staff catalog</p>
-				<h1>Inventory</h1>
-			</div>
-			<div class="admin-heading-actions">
-				<form method="POST" action="/logout">
-					<button class="logout-button" type="submit">Log out</button>
-				</form>
-				<button class="new-piece-button" type="button" onclick={createItem}>+ New piece</button>
-			</div>
-		</header>
-
-		<div class="admin-search-row">
-			<label>
-				<span>Search inventory</span>
-				<input bind:value={query} placeholder="Name, category, or status" />
-			</label>
-			<p>{data.items.length} total</p>
-		</div>
-
-		{#if notice && !editorOpen}
-			<p class="admin-notice">{notice}</p>
-		{/if}
-
-		<div class="admin-items">
-			{#each visibleItems as item (item.id)}
-				<button
-					class:active={selectedId === item.id}
-					type="button"
-					onclick={() => selectItem(item)}
-				>
-					<span class="admin-item-media">
-						<img src={item.image} alt="" />
-					</span>
-					<span class="admin-item-copy">
-						<strong>{item.title}</strong>
-						<small>{item.category} · ${item.price.toLocaleString('en-US')}</small>
-					</span>
-					<span class:available={item.status === 'Available'} class="admin-item-status">{item.status}</span>
-					<span class="admin-item-arrow"><Icon name="arrow-right" /></span>
-				</button>
-			{/each}
-		</div>
-
-		<footer class="admin-list-footer">
-			<p>Changes are saved to the shared inventory database.</p>
-		</footer>
-	</section>
-
+<div class="admin-shell editor-only editor-open">
 	<section class="admin-editor-pane">
-		{#if editorOpen}
-			<header class="editor-heading" class:has-unsaved-changes={isDirty}>
-				<button class="editor-back" type="button" onclick={() => (editorOpen = false)}><Icon name="arrow-left" /> Inventory</button>
+		<header class="editor-heading" class:has-unsaved-changes={isDirty}>
+			<a class="editor-back" href="/shop"><Icon name="arrow-left" /> Inventory</a>
 				<div class="editor-heading-copy">
 					<p class="eyebrow">Inventory editor</p>
 					<h2>{creating ? 'New listing' : 'Edit listing'}</h2>
@@ -352,12 +274,15 @@
 								? 'Save failed · changes remain'
 								: isDirty
 									? 'Unsaved changes'
-									: 'All changes saved'}
+								: 'All changes saved'}
 					</p>
 				</div>
-			</header>
+			<form class="editor-logout" method="POST" action="/logout">
+				<button class="logout-button" type="submit">Log out</button>
+			</form>
+		</header>
 
-			<form id="item-editor" class="editor-form" method="POST" action="?/save" use:enhance={enhanceEditor}>
+		<form id="item-editor" class="editor-form" method="POST" action="?/save" use:enhance={enhanceEditor}>
 				<input type="hidden" name="slug" value={selectedId} />
 				<input type="hidden" name="status" value={draft.status} />
 				<input type="hidden" name="existingImage" value={draft.image} />
@@ -418,25 +343,17 @@
 					<button class="delete-button" type="submit" formaction="?/remove" formnovalidate onclick={confirmRemoval}>Remove piece</button>
 				</div>
 				{/if}
-			</form>
+		</form>
 
-			<button
-				class="save-button floating-save-button"
-				class:active={isDirty}
-				type="submit"
-				form="item-editor"
-				disabled={!isDirty || saveState === 'saving'}
-			>
-				<span>{saveState === 'saving' ? 'Saving…' : isDirty ? (creating ? 'Add piece' : 'Save changes') : 'Saved'}</span>
-				<Icon name={isDirty ? 'upload' : 'check'} />
-			</button>
-		{:else}
-			<div class="editor-empty">
-				<p class="eyebrow">Catalog controls</p>
-				<h2>Select a piece to edit it.</h2>
-				<p>Update availability, correct details, or add a new arrival right from a phone.</p>
-				<button class="button-link" type="button" onclick={createItem}>Add a new piece <Icon name="arrow-up-right" /></button>
-			</div>
-		{/if}
+		<button
+			class="save-button floating-save-button"
+			class:active={isDirty}
+			type="submit"
+			form="item-editor"
+			disabled={!isDirty || saveState === 'saving'}
+		>
+			<span>{saveState === 'saving' ? 'Saving…' : isDirty ? (creating ? 'Add piece' : 'Save changes') : 'Saved'}</span>
+			<Icon name={isDirty ? 'upload' : 'check'} />
+		</button>
 	</section>
 </div>

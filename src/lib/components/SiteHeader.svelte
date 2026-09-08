@@ -5,6 +5,8 @@
 
 	let menuOpen = $state(false);
 	let isShopRoute = $derived(page.url.pathname === '/shop');
+	let isAdmin = $derived(Boolean(page.data.isAdmin));
+	let staffHref = $derived(isAdmin ? '/shop' : '/login?next=/shop');
 	let showMobileDock = $derived(
 		!isShopRoute && !page.url.pathname.startsWith('/admin') && !page.url.pathname.startsWith('/login')
 	);
@@ -32,7 +34,7 @@
 		<a href="/shop" onclick={closeMenu}>Inventory</a>
 		<a href="/#visit" onclick={closeMenu}>Visit</a>
 		<a href="/#consign" onclick={closeMenu}>Consign</a>
-		<a href="/admin" onclick={closeMenu}>Staff demo</a>
+		<a href={staffHref} onclick={closeMenu}>{isAdmin ? 'Staff mode' : 'Staff login'}</a>
 	</nav>
 
 	<a class="header-contact" href="tel:+18139092411">Carrollwood · (813) 909-2411</a>
@@ -52,7 +54,7 @@
 		<a href="/shop" onclick={closeMenu}><span>Inventory</span><Icon name="arrow-up-right" /></a>
 		<a href="/#consign" onclick={closeMenu}><span>Consign</span><Icon name="arrow-up-right" /></a>
 		<a href="/#visit" onclick={closeMenu}><span>Visit</span><Icon name="arrow-up-right" /></a>
-		<a href="/admin" onclick={closeMenu}><span>Staff demo</span><Icon name="arrow-up-right" /></a>
+		<a href={staffHref} onclick={closeMenu}><span>{isAdmin ? 'Staff mode' : 'Staff login'}</span><Icon name="arrow-up-right" /></a>
 	</nav>
 </aside>
 

@@ -35,5 +35,7 @@
 		<path d="m5 12.5 4.2 4.2L19 7" />
 	{:else if name === 'upload'}
 		<path d="M12 20V5m-5 5 5-5 5 5" />
+	{:else if name === 'plus'}
+		<path d="M12 5v14M5 12h14" />
 	{/if}
 </svg>

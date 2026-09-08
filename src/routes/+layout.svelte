@@ -19,7 +19,7 @@
 
 <div class:admin-app-shell={isAdminRoute}>
 	<div class="concept-banner">Independent website concept · Sample inventory · Not the official website</div>
-	<SiteHeader />
+	{#if !isAdminRoute}<SiteHeader />{/if}
 	<main>{@render children()}</main>
 	{#if !isAdminRoute}<SiteFooter />{/if}
 </div>

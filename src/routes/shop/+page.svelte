@@ -114,6 +114,21 @@
 		<p>Furniture and decor currently listed by The Room Exchange.</p>
 	</header>
 
+	{#if data.isAdmin}
+		<div class="staff-mode-bar">
+			<div>
+				<p class="eyebrow">Staff mode</p>
+				<strong>Browse the public catalog, then edit any listing in place.</strong>
+			</div>
+			<div class="staff-mode-actions">
+				<a class="staff-primary-action" href="/admin?new=1"><Icon name="plus" /> Add new piece</a>
+				<form method="POST" action="/logout">
+					<button class="logout-button" type="submit">Log out</button>
+				</form>
+			</div>
+		</div>
+	{/if}
+
 	<div class="marketplace-layout">
 		<aside id="mobile-inventory-filters" class="marketplace-filters" class:open={filtersOpen} aria-label="Inventory filters">
 			<div class="mobile-filter-heading">
@@ -241,12 +256,19 @@
 		<Icon name="sort" />
 		<span>Sort</span>
 	</button>
-	<button type="button" onclick={toggleViewMode}>
-		{#if viewMode === 'gallery'}
-			<Icon name="grid" />
-		{:else}
-			<Icon name="gallery" />
-		{/if}
-		<span>{viewMode === 'gallery' ? 'Grid' : 'Gallery'}</span>
-	</button>
+	{#if data.isAdmin}
+		<a href="/admin?new=1">
+			<Icon name="plus" />
+			<span>Add</span>
+		</a>
+	{:else}
+		<button type="button" onclick={toggleViewMode}>
+			{#if viewMode === 'gallery'}
+				<Icon name="grid" />
+			{:else}
+				<Icon name="gallery" />
+			{/if}
+			<span>{viewMode === 'gallery' ? 'Grid' : 'Gallery'}</span>
+		</button>
+	{/if}
 </nav>

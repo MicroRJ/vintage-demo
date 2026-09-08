@@ -1,12 +1,12 @@
 import { randomUUID } from 'node:crypto';
 import { fail, redirect } from '@sveltejs/kit';
-import { archiveItem, createItem, listItems, updateItem } from '$lib/server/database.js';
+import { archiveItem, createItem, getItemBySlug, updateItem } from '$lib/server/database.js';
 
 const statuses = new Set(['Available', 'Held', 'Sold']);
 
-function requireAdmin(locals) {
+function requireAdmin(locals, destination = '/admin') {
 	if (!locals.isAdmin) {
-		redirect(303, '/login?next=/admin');
+		redirect(303, `/login?next=${encodeURIComponent(destination)}`);
 	}
 }
 
@@ -52,11 +52,24 @@ function readItem(formData) {
 }
 
 export async function load({ locals, url }) {
-	requireAdmin(locals);
+	const destination = `${url.pathname}${url.search}`;
+	requireAdmin(locals, destination);
+
+	const editId = url.searchParams.get('item') ?? '';
+	const createNew = !editId && url.searchParams.get('new') === '1';
+
+	if (!editId && !createNew) {
+		redirect(303, '/shop');
+	}
+
+	const item = editId ? await getItemBySlug(editId) : null;
+	if (editId && !item) {
+		redirect(303, '/shop');
+	}
 
 	return {
-		items: await listItems(),
-		editId: url.searchParams.get('item') ?? ''
+		item,
+		createNew
 	};
 }
 

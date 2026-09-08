@@ -4,7 +4,7 @@
 	let { item, index = 0, isAdmin = false } = $props();
 </script>
 
-<article class="item-card">
+<article class="item-card" class:staff-card={isAdmin}>
 	<div class="item-card-media">
 		<a class="item-image" href={`/item/${item.id}`} aria-label={`View ${item.title}`}>
 			<img src={item.image} alt={item.title} loading={index > 2 ? 'lazy' : 'eager'} />
