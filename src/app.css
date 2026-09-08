@@ -2185,26 +2185,35 @@ img {
 	.mobile-sort-menu {
 		position: fixed;
 		z-index: 55;
-		right: 12px;
-		bottom: calc(max(12px, env(safe-area-inset-bottom)) + 72px);
-		left: 12px;
+		top: auto;
+		right: 0;
+		bottom: 0;
+		left: 0;
 		display: grid;
-		padding: 18px;
+		width: 100%;
+		padding: 22px 22px calc(22px + env(safe-area-inset-bottom));
 		border: 1px solid var(--line);
+		border-bottom: 0;
+		border-radius: 20px 20px 0 0;
 		background: var(--white);
-		box-shadow: 0 12px 50px rgba(21, 27, 34, 0.24);
+		box-shadow: 0 -20px 70px rgba(21, 27, 34, 0.18);
+		visibility: hidden;
+		transform: translateY(calc(100% + 24px));
+		pointer-events: none;
+		transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), visibility 220ms;
 	}
 
-	.mobile-sort-menu p {
-		margin: 0 0 10px;
-		color: var(--muted);
-		font-size: 0.62rem;
-		font-weight: 600;
-		letter-spacing: 0.12em;
-		text-transform: uppercase;
+	.mobile-sort-menu.open {
+		visibility: visible;
+		transform: translateY(0);
+		pointer-events: auto;
 	}
 
-	.mobile-sort-menu button {
+	.mobile-sort-options {
+		display: grid;
+	}
+
+	.mobile-sort-options button {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -2218,7 +2227,7 @@ img {
 		text-align: left;
 	}
 
-	.mobile-sort-menu button.active {
+	.mobile-sort-options button.active {
 		color: var(--rust);
 		font-weight: 600;
 	}

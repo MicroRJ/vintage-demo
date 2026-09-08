@@ -207,17 +207,20 @@
 	<button class="mobile-control-backdrop" type="button" aria-label="Close inventory controls" onclick={closeMobileControls}></button>
 {/if}
 
-{#if sortOpen}
-	<div class="mobile-sort-menu" aria-label="Sort inventory">
-		<p>Sort inventory</p>
-		{#each sortOptions as option}
-			<button class:active={sort === option.value} type="button" onclick={() => chooseSort(option.value)}>
-				<span>{option.label}</span>
-				<span aria-hidden="true">{sort === option.value ? '✓' : ''}</span>
-			</button>
-		{/each}
+	<div class="mobile-sort-menu" class:open={sortOpen} aria-label="Sort inventory" aria-hidden={!sortOpen}>
+		<div class="mobile-filter-heading">
+			<strong>Sort inventory</strong>
+			<button type="button" onclick={() => (sortOpen = false)} aria-label="Close sorting">×</button>
+		</div>
+		<div class="mobile-sort-options">
+			{#each sortOptions as option}
+				<button class:active={sort === option.value} type="button" onclick={() => chooseSort(option.value)}>
+					<span>{option.label}</span>
+					<span aria-hidden="true">{sort === option.value ? '✓' : ''}</span>
+				</button>
+			{/each}
+		</div>
 	</div>
-{/if}
 
 <nav class="mobile-marketplace-bar" aria-label="Inventory controls">
 	<div class="mobile-result-count"><strong>{results.length}</strong><span>{results.length === 1 ? 'item' : 'items'}</span></div>
