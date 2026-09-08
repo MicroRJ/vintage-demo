@@ -15,6 +15,16 @@
 		<rect x="14" y="4" width="6" height="6" />
 		<rect x="4" y="14" width="6" height="6" />
 		<rect x="14" y="14" width="6" height="6" />
+	{:else if name === 'dense-grid'}
+		<rect x="3.5" y="4" width="4" height="4" />
+		<rect x="10" y="4" width="4" height="4" />
+		<rect x="16.5" y="4" width="4" height="4" />
+		<rect x="3.5" y="10" width="4" height="4" />
+		<rect x="10" y="10" width="4" height="4" />
+		<rect x="16.5" y="10" width="4" height="4" />
+		<rect x="3.5" y="16" width="4" height="4" />
+		<rect x="10" y="16" width="4" height="4" />
+		<rect x="16.5" y="16" width="4" height="4" />
 	{:else if name === 'gallery'}
 		<rect x="3.5" y="5" width="17" height="14" />
 		<path d="m5.5 17 4.5-4.5 3 3 2.5-2.5 3 3M15.5 9h.01" />

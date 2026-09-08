@@ -1,7 +1,7 @@
 <script>
 	import Icon from '$lib/components/Icon.svelte';
 	import { formatPrice } from '$lib/items.js';
-	let { item, index = 0, isAdmin = false } = $props();
+	let { item, index = 0, isAdmin = false, compact = false } = $props();
 </script>
 
 <article class="item-card" class:staff-card={isAdmin}>
@@ -13,8 +13,8 @@
 			{/if}
 		</a>
 		{#if isAdmin}
-			<a class="item-card-edit" href={`/admin?item=${encodeURIComponent(item.id)}`}>
-				Edit listing <Icon name="arrow-right" />
+			<a class="item-card-edit" href={`/admin?item=${encodeURIComponent(item.id)}`} aria-label={`Edit ${item.title}`}>
+				{compact ? 'Edit' : 'Edit listing'} <Icon name="arrow-right" />
 			</a>
 		{/if}
 	</div>

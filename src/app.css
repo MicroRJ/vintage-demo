@@ -1065,6 +1065,57 @@ img {
 	font-size: clamp(1.15rem, 1.7vw, 1.55rem);
 }
 
+.catalog-grid.dense-view {
+	grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+	column-gap: 12px;
+	row-gap: 28px;
+}
+
+.catalog-grid.dense-view .item-card:nth-child(n) {
+	grid-column: span 1;
+}
+
+.catalog-grid.dense-view .item-card:nth-child(n) .item-image {
+	aspect-ratio: 4 / 5;
+}
+
+.catalog-grid.dense-view .item-card-copy {
+	display: block;
+	padding-top: 9px;
+}
+
+.catalog-grid.dense-view .item-card h3 {
+	margin-top: 3px;
+	font-size: 1rem;
+	line-height: 1.12;
+}
+
+.catalog-grid.dense-view .item-meta {
+	font-size: 0.54rem;
+	letter-spacing: 0.07em;
+}
+
+.catalog-grid.dense-view .item-price {
+	margin-top: 7px;
+	font-size: 0.61rem;
+}
+
+.catalog-grid.dense-view .item-card-edit {
+	right: 7px;
+	bottom: 7px;
+	gap: 10px;
+	min-height: 34px;
+	padding: 8px 9px;
+	font-size: 0.56rem;
+}
+
+.catalog-grid.dense-view .item-status {
+	top: 7px;
+	left: 7px;
+	padding: 5px 7px;
+	font-size: 0.54rem;
+}
+
 .empty-state {
 	max-width: 650px;
 	padding: 100px 0 40px;
@@ -2382,7 +2433,7 @@ img {
 		padding-bottom: 205px;
 	}
 
-	.catalog-summary .catalog-view-switch {
+	.catalog-summary .catalog-view-switch:not(.staff-view-switch) {
 		display: none;
 	}
 
@@ -2393,6 +2444,12 @@ img {
 
 	.catalog-grid.grid-view {
 		grid-template-columns: repeat(2, minmax(0, 1fr));
+	}
+
+	.catalog-grid.dense-view {
+		grid-template-columns: repeat(auto-fill, minmax(125px, 1fr));
+		column-gap: 10px;
+		row-gap: 24px;
 	}
 
 	.catalog-grid .item-card:nth-child(n) {
@@ -2608,9 +2665,52 @@ img {
 		gap: 9px;
 	}
 
+	.catalog-summary.staff-summary {
+		align-items: stretch;
+		flex-direction: column;
+		gap: 16px;
+	}
+
+	.staff-summary .catalog-summary-actions {
+		align-items: stretch;
+	}
+
+	.staff-summary .catalog-view-switch {
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		width: 100%;
+	}
+
+	.staff-summary .catalog-view-switch button {
+		width: 100%;
+	}
+
 	.catalog-view-switch button {
 		padding: 8px 9px;
 		font-size: 0.58rem;
+	}
+
+	.catalog-grid.dense-view {
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		column-gap: 9px;
+		row-gap: 22px;
+	}
+
+	.catalog-grid.dense-view .item-meta {
+		display: none;
+	}
+
+	.catalog-grid.dense-view .item-card h3 {
+		margin-top: 0;
+		font-family: var(--sans);
+		font-size: 0.78rem;
+		font-weight: 600;
+		line-height: 1.2;
+	}
+
+	.catalog-grid.dense-view .item-price {
+		margin-top: 5px;
+		font-size: 0.55rem;
 	}
 
 	.detail-image {

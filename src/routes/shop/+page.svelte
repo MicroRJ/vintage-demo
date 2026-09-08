@@ -5,11 +5,15 @@
 
 	let { data } = $props();
 
+	function initialViewMode() {
+		return data.isAdmin ? 'dense' : 'gallery';
+	}
+
 	let query = $state(page.url.searchParams.get('q') ?? '');
 	let category = $state('All');
 	let status = $state('Available');
 	let sort = $state('newest');
-	let viewMode = $state('gallery');
+	let viewMode = $state(initialViewMode());
 	let minPrice = $state();
 	let maxPrice = $state();
 	let filtersOpen = $state(false);
@@ -92,8 +96,11 @@
 	}
 
 	function toggleViewMode() {
-		viewMode = viewMode === 'gallery' ? 'grid' : 'gallery';
+		viewMode = viewMode === 'gallery' ? 'grid' : viewMode === 'grid' ? 'dense' : 'gallery';
 	}
+
+	let nextViewLabel = $derived(viewMode === 'gallery' ? 'Grid' : viewMode === 'grid' ? 'Dense' : 'Gallery');
+	let nextViewIcon = $derived(viewMode === 'gallery' ? 'grid' : viewMode === 'grid' ? 'dense-grid' : 'gallery');
 
 	function openSiteMenu() {
 		closeMobileControls();
@@ -193,23 +200,24 @@
 		</aside>
 
 		<div class="marketplace-results">
-			<header class="catalog-summary">
+			<header class="catalog-summary" class:staff-summary={data.isAdmin}>
 				<div>
 					<h2>{category === 'All' ? 'All inventory' : category}</h2>
 					<p>{results.length} {results.length === 1 ? 'listing' : 'listings'}</p>
 				</div>
 				<div class="catalog-summary-actions">
-					<div class="catalog-view-switch" aria-label="Inventory view">
+					<div class="catalog-view-switch" class:staff-view-switch={data.isAdmin} aria-label="Inventory view">
 						<button class:active={viewMode === 'gallery'} aria-pressed={viewMode === 'gallery'} type="button" onclick={() => (viewMode = 'gallery')}>Gallery</button>
 						<button class:active={viewMode === 'grid'} aria-pressed={viewMode === 'grid'} type="button" onclick={() => (viewMode = 'grid')}>Grid</button>
+						<button class:active={viewMode === 'dense'} aria-pressed={viewMode === 'dense'} type="button" onclick={() => (viewMode = 'dense')}>Dense</button>
 					</div>
 				</div>
 			</header>
 
 			{#if results.length}
-				<div class="catalog-grid" class:grid-view={viewMode === 'grid'}>
+				<div class="catalog-grid" class:grid-view={viewMode === 'grid'} class:dense-view={viewMode === 'dense'}>
 					{#each results as item, index (item.id)}
-						<ItemCard {item} {index} isAdmin={data.isAdmin} />
+						<ItemCard {item} {index} isAdmin={data.isAdmin} compact={viewMode === 'dense'} />
 					{/each}
 				</div>
 			{:else}
@@ -263,12 +271,8 @@
 		</a>
 	{:else}
 		<button type="button" onclick={toggleViewMode}>
-			{#if viewMode === 'gallery'}
-				<Icon name="grid" />
-			{:else}
-				<Icon name="gallery" />
-			{/if}
-			<span>{viewMode === 'gallery' ? 'Grid' : 'Gallery'}</span>
+			<Icon name={nextViewIcon} />
+			<span>{nextViewLabel}</span>
 		</button>
 	{/if}
 </nav>
