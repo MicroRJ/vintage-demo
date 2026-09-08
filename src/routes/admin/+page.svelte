@@ -1,5 +1,6 @@
 <script>
 	import { enhance } from '$app/forms';
+	import Icon from '$lib/components/Icon.svelte';
 	import { formatPrice } from '$lib/items.js';
 
 	let { data } = $props();
@@ -322,7 +323,7 @@
 						<small>{item.category} · ${item.price.toLocaleString('en-US')}</small>
 					</span>
 					<span class:available={item.status === 'Available'} class="admin-item-status">{item.status}</span>
-					<span class="admin-item-arrow" aria-hidden="true">→</span>
+					<span class="admin-item-arrow"><Icon name="arrow-right" /></span>
 				</button>
 			{/each}
 		</div>
@@ -335,7 +336,7 @@
 	<section class="admin-editor-pane">
 		{#if editorOpen}
 			<header class="editor-heading" class:has-unsaved-changes={isDirty}>
-				<button class="editor-back" type="button" onclick={() => (editorOpen = false)}>← Inventory</button>
+				<button class="editor-back" type="button" onclick={() => (editorOpen = false)}><Icon name="arrow-left" /> Inventory</button>
 				<div class="editor-heading-copy">
 					<p class="eyebrow">Inventory editor</p>
 					<h2>{creating ? 'New listing' : 'Edit listing'}</h2>
@@ -427,14 +428,14 @@
 				disabled={!isDirty || saveState === 'saving'}
 			>
 				<span>{saveState === 'saving' ? 'Saving…' : isDirty ? (creating ? 'Add piece' : 'Save changes') : 'Saved'}</span>
-				<span aria-hidden="true">{isDirty ? '↑' : '✓'}</span>
+				<Icon name={isDirty ? 'upload' : 'check'} />
 			</button>
 		{:else}
 			<div class="editor-empty">
 				<p class="eyebrow">Catalog controls</p>
 				<h2>Select a piece to edit it.</h2>
 				<p>Update availability, correct details, or add a new arrival right from a phone.</p>
-				<button class="button-link" type="button" onclick={createItem}>Add a new piece <span>↗</span></button>
+				<button class="button-link" type="button" onclick={createItem}>Add a new piece <Icon name="arrow-up-right" /></button>
 			</div>
 		{/if}
 	</section>

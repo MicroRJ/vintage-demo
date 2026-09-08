@@ -1,4 +1,5 @@
 <script>
+	import Icon from '$lib/components/Icon.svelte';
 	import ItemCard from '$lib/components/ItemCard.svelte';
 
 	let { data } = $props();
@@ -22,14 +23,14 @@
 			<label for="hero-query">Search the showroom</label>
 			<div>
 				<input id="hero-query" name="q" bind:value={query} placeholder="Sectional, dining table, décor…" />
-				<button type="submit" aria-label="Search inventory">Browse <span>↗</span></button>
+				<button type="submit" aria-label="Search inventory">Browse <Icon name="arrow-up-right" /></button>
 			</div>
 		</form>
 	</div>
 	<a class="hero-note" href="/shop">
 		<span>New arrivals</span>
 		<strong>Fresh pieces arrive throughout the week</strong>
-		<span aria-hidden="true">→</span>
+		<Icon name="arrow-right" />
 	</a>
 </section>
 
@@ -39,7 +40,7 @@
 			<p class="eyebrow">Sample inventory</p>
 			<h2>Recently added</h2>
 		</div>
-		<a class="text-link" href="/shop">View everything <span>↗</span></a>
+		<a class="text-link" href="/shop">View everything <Icon name="arrow-up-right" /></a>
 	</div>
 
 		<div class="featured-grid">
@@ -61,7 +62,7 @@
 			<div><dt>Address</dt><dd>14340 N Dale Mabry Hwy<br />Tampa, FL 33618</dd></div>
 			<div><dt>Hours</dt><dd>Tue–Sat, 10–6<br />Sun, 12–5 · Mon closed</dd></div>
 		</dl>
-		<a class="button-link" href="https://www.google.com/maps/search/?api=1&query=The+Room+Exchange+14340+N+Dale+Mabry+Hwy+Tampa+FL+33618" target="_blank" rel="noreferrer">Get directions <span>↗</span></a>
+		<a class="button-link" href="https://www.google.com/maps/search/?api=1&query=The+Room+Exchange+14340+N+Dale+Mabry+Hwy+Tampa+FL+33618" target="_blank" rel="noreferrer">Get directions <Icon name="arrow-up-right" /></a>
 	</div>
 </section>
 
@@ -71,7 +72,7 @@
 		<h2>Show us what you would like to consign.</h2>
 		<div class="consign-copy">
 			<p>Send clear photographs, dimensions, and any condition notes. The store can review the piece and help arrange an appointment if it may be a fit.</p>
-			<a class="text-link light" href="mailto:theroomexchange@gmail.com?subject=Consignment%20inquiry">Email consignment photos <span>↗</span></a>
+			<a class="text-link light" href="mailto:theroomexchange@gmail.com?subject=Consignment%20inquiry">Email consignment photos <Icon name="arrow-up-right" /></a>
 		</div>
 	</div>
 </section>

@@ -1,4 +1,5 @@
 <script>
+	import Icon from '$lib/components/Icon.svelte';
 	import { formatPrice } from '$lib/items.js';
 
 	let { data } = $props();
@@ -19,7 +20,7 @@
 	</div>
 
 	<div class="detail-copy">
-		<a class="back-link" href="/shop">← Back to inventory</a>
+		<a class="back-link" href="/shop"><Icon name="arrow-left" /> Back to inventory</a>
 		<p class="eyebrow">{item.category} · {item.era}</p>
 		<h1 class="detail-title">{item.title}</h1>
 		<p class="detail-price">{formatPrice(item.price)}</p>
@@ -42,7 +43,7 @@
 					<p class="eyebrow">Staff controls</p>
 					<p>You are signed in. Update this listing without searching for it again.</p>
 				</div>
-				<a href={`/admin?item=${encodeURIComponent(item.id)}`}>Edit listing <span aria-hidden="true">→</span></a>
+				<a href={`/admin?item=${encodeURIComponent(item.id)}`}>Edit listing <Icon name="arrow-right" /></a>
 			</div>
 		{/if}
 
@@ -50,7 +51,7 @@
 			<div class="sold-note">
 				<strong>This piece has been sold.</strong>
 				<p>Browse the current collection for similar pieces.</p>
-				<a class="button-link" href="/shop">See what is available <span>↗</span></a>
+				<a class="button-link" href="/shop">See what is available <Icon name="arrow-up-right" /></a>
 			</div>
 		{:else}
 			<a
@@ -58,7 +59,7 @@
 				href="tel:+18139092411"
 			>
 				<span>{item.status === 'Held' ? 'Ask about availability' : 'Call about this piece'}</span>
-				<span aria-hidden="true">↗</span>
+				<Icon name="arrow-up-right" />
 			</a>
 		{/if}
 	</div>

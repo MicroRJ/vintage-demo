@@ -163,6 +163,18 @@ img {
 	max-width: 100%;
 }
 
+.ui-icon {
+	display: inline-block;
+	width: 1.05em;
+	height: 1.05em;
+	flex: 0 0 auto;
+	fill: none;
+	stroke: currentColor;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	stroke-width: 1.6;
+}
+
 .concept-banner {
 	padding: 7px 20px;
 	background: var(--forest);
@@ -407,9 +419,10 @@ img {
 	text-transform: uppercase;
 }
 
-.text-link span,
-.button-link span {
-	font-size: 1rem;
+.text-link .ui-icon,
+.button-link .ui-icon {
+	width: 1rem;
+	height: 1rem;
 }
 
 .featured-grid {
@@ -1080,7 +1093,9 @@ img {
 }
 
 .back-link {
-	display: inline-block;
+	display: inline-flex;
+	align-items: center;
+	gap: 9px;
 	margin-bottom: clamp(44px, 5vw, 72px);
 	font-size: 0.68rem;
 	font-weight: 500;
@@ -1440,6 +1455,12 @@ img {
 .admin-item-arrow {
 	padding: 12px 14px 0 0;
 	font-size: 1.1rem;
+}
+
+.editor-back {
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
 }
 
 .admin-list-footer {

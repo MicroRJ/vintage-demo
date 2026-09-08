@@ -1,5 +1,6 @@
 <script>
 	import { page } from '$app/state';
+	import Icon from '$lib/components/Icon.svelte';
 	import ItemCard from '$lib/components/ItemCard.svelte';
 
 	let { data } = $props();
@@ -117,12 +118,12 @@
 		<aside id="mobile-inventory-filters" class="marketplace-filters" class:open={filtersOpen} aria-label="Inventory filters">
 			<div class="mobile-filter-heading">
 				<strong>Search & filters</strong>
-				<button type="button" onclick={() => (filtersOpen = false)} aria-label="Close filters">×</button>
+				<button type="button" onclick={() => (filtersOpen = false)} aria-label="Close filters"><Icon name="close" /></button>
 			</div>
 
 			<label class="marketplace-search">
 				<span>Search inventory</span>
-				<div><span aria-hidden="true">⌕</span><input bind:value={query} placeholder="Sofa, dining, wood…" /></div>
+				<div><Icon name="search" /><input bind:value={query} placeholder="Sofa, dining, wood…" /></div>
 			</label>
 
 			<div class="marketplace-filter-section">
@@ -201,7 +202,7 @@
 					<p class="eyebrow">No matches</p>
 					<h2>Try a broader search.</h2>
 					<p>The inventory changes often. If you are hunting for something specific, call the store.</p>
-					<button class="button-link" type="button" onclick={clearFilters}>Clear filters <span>↗</span></button>
+					<button class="button-link" type="button" onclick={clearFilters}>Clear filters <Icon name="arrow-up-right" /></button>
 				</div>
 			{/if}
 		</div>
@@ -215,13 +216,13 @@
 	<div class="mobile-sort-menu" class:open={sortOpen} aria-label="Sort inventory" aria-hidden={!sortOpen}>
 		<div class="mobile-filter-heading">
 			<strong>Sort inventory</strong>
-			<button type="button" onclick={() => (sortOpen = false)} aria-label="Close sorting">×</button>
+			<button type="button" onclick={() => (sortOpen = false)} aria-label="Close sorting"><Icon name="close" /></button>
 		</div>
 		<div class="mobile-sort-options">
 			{#each sortOptions as option}
 				<button class:active={sort === option.value} type="button" onclick={() => chooseSort(option.value)}>
 					<span>{option.label}</span>
-					<span aria-hidden="true">{sort === option.value ? '✓' : ''}</span>
+					{#if sort === option.value}<Icon name="check" />{/if}
 				</button>
 			{/each}
 		</div>
@@ -229,22 +230,22 @@
 
 <nav class="mobile-marketplace-bar" aria-label="Inventory controls">
 	<button type="button" onclick={openSiteMenu}>
-		<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" /></svg>
+		<Icon name="menu" />
 		<span>Menu</span>
 	</button>
 	<button type="button" aria-expanded={filtersOpen} aria-controls="mobile-inventory-filters" onclick={openFilters}>
-		<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5" /><path d="m16 16 4 4" /></svg>
+		<Icon name="search" />
 		<span>Search{activeFilterCount ? ` (${activeFilterCount})` : ''}</span>
 	</button>
 	<button type="button" aria-expanded={sortOpen} onclick={toggleSort}>
-		<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4v16m0-16L4.5 7.5M8 4l3.5 3.5M16 20V4m0 16-3.5-3.5M16 20l3.5-3.5" /></svg>
+		<Icon name="sort" />
 		<span>Sort</span>
 	</button>
 	<button type="button" onclick={toggleViewMode}>
 		{#if viewMode === 'gallery'}
-			<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="4" width="6" height="6" /><rect x="14" y="4" width="6" height="6" /><rect x="4" y="14" width="6" height="6" /><rect x="14" y="14" width="6" height="6" /></svg>
+			<Icon name="grid" />
 		{:else}
-			<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="5" width="17" height="14" /><path d="m5.5 17 4.5-4.5 3 3 2.5-2.5 3 3M15.5 9h.01" /></svg>
+			<Icon name="gallery" />
 		{/if}
 		<span>{viewMode === 'gallery' ? 'Grid' : 'Gallery'}</span>
 	</button>

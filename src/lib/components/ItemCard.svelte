@@ -1,4 +1,5 @@
 <script>
+	import Icon from '$lib/components/Icon.svelte';
 	import { formatPrice } from '$lib/items.js';
 	let { item, index = 0, isAdmin = false } = $props();
 </script>
@@ -13,7 +14,7 @@
 		</a>
 		{#if isAdmin}
 			<a class="item-card-edit" href={`/admin?item=${encodeURIComponent(item.id)}`}>
-				Edit listing <span aria-hidden="true">→</span>
+				Edit listing <Icon name="arrow-right" />
 			</a>
 		{/if}
 	</div>
