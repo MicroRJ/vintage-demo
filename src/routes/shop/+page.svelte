@@ -9,10 +9,19 @@
 	let status = $state('Available');
 	let sort = $state('newest');
 	let viewMode = $state('gallery');
+	let minPrice = $state();
+	let maxPrice = $state();
+	let filtersOpen = $state(false);
 
 	let categoryOptions = $derived(['All', ...new Set(data.items.map((item) => item.category))]);
+	let statusOptions = ['Available', 'Held', 'Sold', 'All'];
+	let hasFilters = $derived(
+		Boolean(query) || category !== 'All' || status !== 'Available' || minPrice != null || maxPrice != null
+	);
 	let results = $derived.by(() => {
 		const needle = query.trim().toLowerCase();
+		const minimum = minPrice == null ? null : Number(minPrice);
+		const maximum = maxPrice == null ? null : Number(maxPrice);
 		const filtered = data.items.filter((item) => {
 			const matchesQuery = !needle || [
 				item.title,
@@ -23,7 +32,9 @@
 			].some((field) => field.toLowerCase().includes(needle));
 			const matchesCategory = category === 'All' || item.category === category;
 			const matchesStatus = status === 'All' || item.status === status;
-			return matchesQuery && matchesCategory && matchesStatus;
+			const matchesMinimum = minimum == null || item.price >= minimum;
+			const matchesMaximum = maximum == null || item.price <= maximum;
+			return matchesQuery && matchesCategory && matchesStatus && matchesMinimum && matchesMaximum;
 		});
 
 		return filtered.toSorted((a, b) => {
@@ -33,80 +44,123 @@
 			return b.dateAdded.localeCompare(a.dateAdded);
 		});
 	});
+
+	function categoryCount(option) {
+		return option === 'All' ? data.items.length : data.items.filter((item) => item.category === option).length;
+	}
+
+	function clearFilters() {
+		query = '';
+		category = 'All';
+		status = 'Available';
+		minPrice = undefined;
+		maxPrice = undefined;
+	}
 </script>
 
 <svelte:head>
 	<title>Current Inventory — The Room Exchange</title>
 </svelte:head>
 
-<header class="page-hero shop-hero">
-	<p class="eyebrow">Searchable showroom concept</p>
-	<h1 class="page-title">See what is<br />here today.</h1>
-	<p>Search by item, category, style, material, or availability before visiting the showroom.</p>
-</header>
-
-<section class="catalog-shell">
-	<div class="catalog-toolbar">
-		<label class="catalog-search">
-			<span>Search</span>
-			<input bind:value={query} placeholder="Try sectional, dining, wood…" />
-		</label>
-
-		<div class="filter-group" aria-label="Filter by category">
-			<span>Category</span>
-			<div class="filter-options">
-				{#each categoryOptions as option}
-					<button class:active={category === option} type="button" onclick={() => (category = option)}>{option}</button>
-				{/each}
-			</div>
+<section class="marketplace-shell">
+	<header class="marketplace-heading">
+		<div>
+			<p class="eyebrow">Current inventory</p>
+			<h1>Browse the showroom.</h1>
 		</div>
+		<p>Furniture and decor currently listed by The Room Exchange.</p>
+	</header>
 
-		<label class="select-filter">
-			<span>Status</span>
-			<select bind:value={status}>
-				<option>Available</option>
-				<option>Held</option>
-				<option>Sold</option>
-				<option>All</option>
-			</select>
-		</label>
+	<div class="marketplace-layout">
+		<aside class="marketplace-filters" class:open={filtersOpen} aria-label="Inventory filters">
+			<div class="mobile-filter-heading">
+				<strong>Search & filters</strong>
+				<button type="button" onclick={() => (filtersOpen = false)} aria-label="Close filters">×</button>
+			</div>
 
-		<label class="select-filter">
-			<span>Sort by</span>
-			<select bind:value={sort}>
-				<option value="newest">Newest</option>
-				<option value="price-low">Price: low to high</option>
-				<option value="price-high">Price: high to low</option>
-				<option value="title">Name</option>
-			</select>
-		</label>
-	</div>
+			<label class="marketplace-search">
+				<span>Search inventory</span>
+				<div><span aria-hidden="true">⌕</span><input bind:value={query} placeholder="Sofa, dining, wood…" /></div>
+			</label>
 
-	<div class="catalog-summary">
-		<p>{results.length} {results.length === 1 ? 'piece' : 'pieces'}</p>
-		<div class="catalog-summary-actions">
-			{#if query || category !== 'All' || status !== 'Available'}
-				<button class="clear-filters" type="button" onclick={() => { query = ''; category = 'All'; status = 'Available'; }}>Clear filters</button>
+			<div class="marketplace-filter-section">
+				<p>Category</p>
+				<div class="marketplace-options">
+					{#each categoryOptions as option}
+						<button class:active={category === option} type="button" onclick={() => (category = option)}>
+							<span>{option === 'All' ? 'All inventory' : option}</span>
+							<small>{categoryCount(option)}</small>
+						</button>
+					{/each}
+				</div>
+			</div>
+
+			<div class="marketplace-filter-section">
+				<p>Availability</p>
+				<div class="marketplace-options compact">
+					{#each statusOptions as option}
+						<button class:active={status === option} type="button" onclick={() => (status = option)}>
+							<span>{option === 'All' ? 'Any status' : option}</span>
+						</button>
+					{/each}
+				</div>
+			</div>
+
+			<div class="marketplace-filter-section">
+				<p>Price</p>
+				<div class="price-range">
+					<label><span>Minimum</span><input type="number" min="0" bind:value={minPrice} placeholder="$0" /></label>
+					<span aria-hidden="true">—</span>
+					<label><span>Maximum</span><input type="number" min="0" bind:value={maxPrice} placeholder="Any" /></label>
+				</div>
+			</div>
+
+			<label class="marketplace-select">
+				<span>Sort by</span>
+				<select bind:value={sort}>
+					<option value="newest">Newest first</option>
+					<option value="price-low">Price: low to high</option>
+					<option value="price-high">Price: high to low</option>
+					<option value="title">Name</option>
+				</select>
+			</label>
+
+			{#if hasFilters}
+				<button class="marketplace-clear" type="button" onclick={clearFilters}>Clear all filters</button>
 			{/if}
-			<div class="catalog-view-switch" aria-label="Inventory view">
-				<button class:active={viewMode === 'gallery'} aria-pressed={viewMode === 'gallery'} type="button" onclick={() => (viewMode = 'gallery')}>Gallery</button>
-				<button class:active={viewMode === 'grid'} aria-pressed={viewMode === 'grid'} type="button" onclick={() => (viewMode = 'grid')}>Grid</button>
-			</div>
+		</aside>
+
+		<div class="marketplace-results">
+			<header class="catalog-summary">
+				<div>
+					<h2>{category === 'All' ? 'All inventory' : category}</h2>
+					<p>{results.length} {results.length === 1 ? 'listing' : 'listings'}</p>
+				</div>
+				<div class="catalog-summary-actions">
+					<button class="mobile-filter-toggle" type="button" aria-expanded={filtersOpen} onclick={() => (filtersOpen = !filtersOpen)}>
+						Search & filters
+					</button>
+					<div class="catalog-view-switch" aria-label="Inventory view">
+						<button class:active={viewMode === 'gallery'} aria-pressed={viewMode === 'gallery'} type="button" onclick={() => (viewMode = 'gallery')}>Gallery</button>
+						<button class:active={viewMode === 'grid'} aria-pressed={viewMode === 'grid'} type="button" onclick={() => (viewMode = 'grid')}>Grid</button>
+					</div>
+				</div>
+			</header>
+
+			{#if results.length}
+				<div class="catalog-grid" class:grid-view={viewMode === 'grid'}>
+					{#each results as item, index (item.id)}
+						<ItemCard {item} {index} isAdmin={data.isAdmin} />
+					{/each}
+				</div>
+			{:else}
+				<div class="empty-state">
+					<p class="eyebrow">No matches</p>
+					<h2>Try a broader search.</h2>
+					<p>The inventory changes often. If you are hunting for something specific, call the store.</p>
+					<button class="button-link" type="button" onclick={clearFilters}>Clear filters <span>↗</span></button>
+				</div>
+			{/if}
 		</div>
 	</div>
-
-	{#if results.length}
-		<div class="catalog-grid" class:grid-view={viewMode === 'grid'}>
-			{#each results as item, index (item.id)}
-				<ItemCard {item} {index} isAdmin={data.isAdmin} />
-			{/each}
-		</div>
-	{:else}
-		<div class="empty-state">
-			<p class="eyebrow">Nothing here yet</p>
-			<h2>Try a broader search.</h2>
-			<p>The inventory changes often. If you are hunting for something specific, call the store.</p>
-			<a class="button-link" href="tel:+18139092411">Call (813) 909-2411 <span>↗</span></a>
-		</div>
-	{/if}
 </section>
