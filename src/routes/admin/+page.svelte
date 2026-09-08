@@ -263,24 +263,6 @@
 	<section class="admin-editor-pane">
 		<header class="editor-heading" class:has-unsaved-changes={isDirty}>
 			<a class="editor-back" href="/shop"><Icon name="arrow-left" /> Inventory</a>
-			<div class="editor-heading-copy">
-				<p class="eyebrow">Inventory editor</p>
-				<h2>{creating ? 'New listing' : 'Edit listing'}</h2>
-				<p
-					class="editor-save-state"
-					class:unsaved={isDirty}
-					class:error={saveState === 'error'}
-					aria-live="polite"
-				>
-					{saveState === 'saving'
-						? 'Saving…'
-						: saveState === 'error'
-							? 'Save failed · changes remain'
-							: isDirty
-								? 'Unsaved changes'
-								: 'All changes saved'}
-				</p>
-			</div>
 			<div class="editor-listing-actions">
 				<label class="feature-toggle" title="Feature this piece on the home page when saved">
 					<input
@@ -313,22 +295,20 @@
 					class:active={isDirty}
 					type="submit"
 					form="item-editor"
+					aria-label={saveState === 'saving' ? 'Saving listing' : !isDirty ? 'All changes saved' : creating ? 'Add piece' : 'Save changes'}
 					disabled={!isDirty || processingImage || saveState === 'saving'}
 				>
 					<span class="desktop-save-label">{saveState === 'saving' ? 'Saving…' : creating ? 'Add piece' : 'Save changes'}</span>
 					<span class="mobile-save-label">{saveState === 'saving' ? 'Saving…' : creating ? 'Add' : 'Save'}</span>
 					<Icon name={isDirty ? 'upload' : 'check'} />
 				</button>
-				<form class="editor-logout" method="POST" action="/logout">
-					<button class="logout-button" type="submit">Log out</button>
-				</form>
 			</div>
 			{#if notice}
 				<p class="admin-notice editor-toolbar-notice" role="status">{notice}</p>
 			{/if}
 		</header>
 
-		<form id="item-editor" class="editor-form editor-detail-shell" method="POST" action="?/save" use:enhance={enhanceEditor}>
+		<form id="item-editor" class="editor-form editor-detail-shell" aria-label={creating ? 'New listing' : 'Edit listing'} method="POST" action="?/save" use:enhance={enhanceEditor}>
 			<input type="hidden" name="slug" value={selectedId} />
 			<input type="hidden" name="status" value={draft.status} />
 			<input type="hidden" name="existingImage" value={draft.image} />
@@ -395,9 +375,6 @@
 					<textarea name="story" rows="4" bind:value={draft.story}></textarea>
 				</label>
 			</div>
-		</form>
-		<form class="editor-mobile-logout" method="POST" action="/logout">
-			<button class="logout-button" type="submit">Log out of staff mode</button>
 		</form>
 	</section>
 </div>
