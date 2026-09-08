@@ -2227,6 +2227,10 @@ img {
 		text-align: left;
 	}
 
+	.mobile-sort-options button:first-child {
+		border-top: 0;
+	}
+
 	.mobile-sort-options button.active {
 		color: var(--rust);
 		font-weight: 600;
