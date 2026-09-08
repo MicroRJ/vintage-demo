@@ -12,11 +12,24 @@
 	let minPrice = $state();
 	let maxPrice = $state();
 	let filtersOpen = $state(false);
+	let sortOpen = $state(false);
 
 	let categoryOptions = $derived(['All', ...new Set(data.items.map((item) => item.category))]);
 	let statusOptions = ['Available', 'Held', 'Sold', 'All'];
+	let sortOptions = [
+		{ value: 'newest', label: 'Newest first' },
+		{ value: 'price-low', label: 'Price: low to high' },
+		{ value: 'price-high', label: 'Price: high to low' },
+		{ value: 'title', label: 'Name' }
+	];
 	let hasFilters = $derived(
 		Boolean(query) || category !== 'All' || status !== 'Available' || minPrice != null || maxPrice != null
+	);
+	let activeFilterCount = $derived(
+		Number(Boolean(query)) +
+		Number(category !== 'All') +
+		Number(status !== 'Available') +
+		Number(minPrice != null || maxPrice != null)
 	);
 	let results = $derived.by(() => {
 		const needle = query.trim().toLowerCase();
@@ -56,6 +69,30 @@
 		minPrice = undefined;
 		maxPrice = undefined;
 	}
+
+	function openFilters() {
+		sortOpen = false;
+		filtersOpen = true;
+	}
+
+	function toggleSort() {
+		filtersOpen = false;
+		sortOpen = !sortOpen;
+	}
+
+	function closeMobileControls() {
+		filtersOpen = false;
+		sortOpen = false;
+	}
+
+	function chooseSort(value) {
+		sort = value;
+		sortOpen = false;
+	}
+
+	function toggleViewMode() {
+		viewMode = viewMode === 'gallery' ? 'grid' : 'gallery';
+	}
 </script>
 
 <svelte:head>
@@ -72,7 +109,7 @@
 	</header>
 
 	<div class="marketplace-layout">
-		<aside class="marketplace-filters" class:open={filtersOpen} aria-label="Inventory filters">
+		<aside id="mobile-inventory-filters" class="marketplace-filters" class:open={filtersOpen} aria-label="Inventory filters">
 			<div class="mobile-filter-heading">
 				<strong>Search & filters</strong>
 				<button type="button" onclick={() => (filtersOpen = false)} aria-label="Close filters">×</button>
@@ -128,6 +165,10 @@
 			{#if hasFilters}
 				<button class="marketplace-clear" type="button" onclick={clearFilters}>Clear all filters</button>
 			{/if}
+
+			<button class="mobile-show-results" type="button" onclick={() => (filtersOpen = false)}>
+				Show {results.length} {results.length === 1 ? 'listing' : 'listings'}
+			</button>
 		</aside>
 
 		<div class="marketplace-results">
@@ -137,9 +178,6 @@
 					<p>{results.length} {results.length === 1 ? 'listing' : 'listings'}</p>
 				</div>
 				<div class="catalog-summary-actions">
-					<button class="mobile-filter-toggle" type="button" aria-expanded={filtersOpen} onclick={() => (filtersOpen = !filtersOpen)}>
-						Search & filters
-					</button>
 					<div class="catalog-view-switch" aria-label="Inventory view">
 						<button class:active={viewMode === 'gallery'} aria-pressed={viewMode === 'gallery'} type="button" onclick={() => (viewMode = 'gallery')}>Gallery</button>
 						<button class:active={viewMode === 'grid'} aria-pressed={viewMode === 'grid'} type="button" onclick={() => (viewMode = 'grid')}>Grid</button>
@@ -164,3 +202,28 @@
 		</div>
 	</div>
 </section>
+
+{#if filtersOpen || sortOpen}
+	<button class="mobile-control-backdrop" type="button" aria-label="Close inventory controls" onclick={closeMobileControls}></button>
+{/if}
+
+{#if sortOpen}
+	<div class="mobile-sort-menu" aria-label="Sort inventory">
+		<p>Sort inventory</p>
+		{#each sortOptions as option}
+			<button class:active={sort === option.value} type="button" onclick={() => chooseSort(option.value)}>
+				<span>{option.label}</span>
+				<span aria-hidden="true">{sort === option.value ? '✓' : ''}</span>
+			</button>
+		{/each}
+	</div>
+{/if}
+
+<nav class="mobile-marketplace-bar" aria-label="Inventory controls">
+	<div class="mobile-result-count"><strong>{results.length}</strong><span>{results.length === 1 ? 'item' : 'items'}</span></div>
+	<button type="button" aria-expanded={filtersOpen} aria-controls="mobile-inventory-filters" onclick={openFilters}>
+		<span>Filters{activeFilterCount ? ` (${activeFilterCount})` : ''}</span>
+	</button>
+	<button type="button" aria-expanded={sortOpen} onclick={toggleSort}><span>Sort</span></button>
+	<button type="button" onclick={toggleViewMode}><span>{viewMode === 'gallery' ? 'Grid' : 'Gallery'}</span></button>
+</nav>
