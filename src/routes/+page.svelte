@@ -17,7 +17,7 @@
 	</div>
 	<div class="hero-copy">
 		<p class="eyebrow">Consignment furniture & home décor · Carrollwood, Tampa</p>
-		<h1>Make room for<br />something different.</h1>
+		<h1>Find your next treasure.</h1>
 		<p class="hero-intro">Browse furniture, décor, and one-of-a-kind finds available now at The Room Exchange.</p>
 		<form class="hero-search" action="/shop">
 			<label for="hero-query">Search the showroom</label>
