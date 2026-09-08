@@ -1,8 +1,11 @@
 import { randomUUID } from 'node:crypto';
+import { put } from '@vercel/blob';
 import { fail, redirect } from '@sveltejs/kit';
 import { archiveItem, createItem, listItems, updateItem } from '$lib/server/database.js';
 
 const statuses = new Set(['Available', 'Held', 'Sold']);
+const imageTypes = new Set(['image/jpeg', 'image/png', 'image/webp']);
+const maxImageBytes = 3 * 1024 * 1024;
 
 function requireAdmin(locals) {
 	if (!locals.isAdmin) {
@@ -39,7 +42,7 @@ function readItem(formData) {
 			era: textValue(formData, 'era'),
 			price,
 			status,
-			image: textValue(formData, 'image') || '/sofa.jpg',
+			image: textValue(formData, 'existingImage') || '/sofa.jpg',
 			dimensions: textValue(formData, 'dimensions'),
 			condition: textValue(formData, 'condition'),
 			materials: textValue(formData, 'materials'),
@@ -49,6 +52,40 @@ function readItem(formData) {
 			featured: formData.get('featured') === 'true'
 		}
 	};
+}
+
+function readImageUpload(formData) {
+	const image = formData.get('imageFile');
+	if (!image || typeof image !== 'object' || !('size' in image) || image.size === 0) {
+		return { image: null };
+	}
+
+	if (!imageTypes.has(image.type)) {
+		return { message: 'Choose a JPEG, PNG, or WebP image.' };
+	}
+
+	if (image.size > maxImageBytes) {
+		return { message: 'That photo is too large. Choose a photo smaller than 3 MB.' };
+	}
+
+	return { image };
+}
+
+async function uploadImage(image, title) {
+	const extension = {
+		'image/jpeg': 'jpg',
+		'image/png': 'png',
+		'image/webp': 'webp'
+	}[image.type];
+	const name = slugify(title) || 'inventory-piece';
+	const blob = await put(`inventory/${name}.${extension}`, image, {
+		access: 'public',
+		addRandomSuffix: true,
+		contentType: image.type,
+		maximumSizeInBytes: maxImageBytes
+	});
+
+	return blob.url;
 }
 
 export async function load({ locals, url }) {
@@ -67,6 +104,20 @@ export const actions = {
 		const formData = await request.formData();
 		const parsed = readItem(formData);
 		if (!parsed.item) return fail(400, { operation: 'save', message: parsed.message });
+		const upload = readImageUpload(formData);
+		if ('message' in upload) return fail(400, { operation: 'save', message: upload.message });
+
+		if (upload.image) {
+			try {
+				parsed.item.image = await uploadImage(upload.image, parsed.item.title);
+			} catch (error) {
+				console.error('Inventory image upload failed.', error);
+				return fail(500, {
+					operation: 'save',
+					message: 'The photo could not be uploaded. Your other changes were not saved.'
+				});
+			}
+		}
 
 		const existingSlug = textValue(formData, 'slug');
 		let item;

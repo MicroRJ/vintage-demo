@@ -3,6 +3,8 @@
 	import { formatPrice } from '$lib/items.js';
 
 	let { data } = $props();
+	const maxImageDimension = 2000;
+	const maxImageBytes = 3 * 1024 * 1024;
 
 	function getInitialItem() {
 		return data.items.find((item) => item.id === data.editId);
@@ -52,7 +54,12 @@
 	let saveState = $state('idle');
 	let editorOpen = $state(Boolean(initialItem));
 	let creating = $state(false);
-	let isDirty = $derived(creating || itemFingerprint(draft) !== savedFingerprint);
+	let pendingImageFile = $state(null);
+	let localPreviewUrl = $state('');
+	let processingImage = $state(false);
+	let imageError = $state('');
+	let previewImage = $derived(localPreviewUrl || draft.image);
+	let isDirty = $derived(creating || Boolean(pendingImageFile) || itemFingerprint(draft) !== savedFingerprint);
 
 	let visibleItems = $derived.by(() => {
 		const needle = query.trim().toLowerCase();
@@ -62,6 +69,7 @@
 	});
 
 	function selectItem(item) {
+		clearPendingImage();
 		selectedId = item.id;
 		draft = structuredClone(item);
 		savedFingerprint = itemFingerprint(item);
@@ -72,6 +80,7 @@
 	}
 
 	function createItem() {
+		clearPendingImage();
 		selectedId = '';
 		draft = blankItem();
 		savedFingerprint = '';
@@ -85,13 +94,107 @@
 		draft.status = nextStatus;
 	}
 
+	function clearPendingImage() {
+		if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl);
+		localPreviewUrl = '';
+		pendingImageFile = null;
+		processingImage = false;
+		imageError = '';
+	}
+
+	function decodeImage(file) {
+		return new Promise((resolve, reject) => {
+			const url = URL.createObjectURL(file);
+			const image = new Image();
+			image.onload = () => {
+				URL.revokeObjectURL(url);
+				resolve(image);
+			};
+			image.onerror = () => {
+				URL.revokeObjectURL(url);
+				reject(new Error('Unable to read this image.'));
+			};
+			image.src = url;
+		});
+	}
+
+	function encodeJpeg(canvas, quality) {
+		return new Promise((resolve, reject) => {
+			canvas.toBlob(
+				(blob) => (blob ? resolve(blob) : reject(new Error('Unable to resize this image.'))),
+				'image/jpeg',
+				quality
+			);
+		});
+	}
+
+	async function chooseImage(event) {
+		const input = event.currentTarget;
+		const file = input.files?.[0];
+		if (!file) return;
+
+		if (!file.type.startsWith('image/')) {
+			imageError = 'Choose a JPEG, PNG, WebP, or phone photo.';
+			input.value = '';
+			return;
+		}
+
+		processingImage = true;
+		imageError = '';
+		notice = '';
+
+		try {
+			const image = await decodeImage(file);
+			const scale = Math.min(1, maxImageDimension / Math.max(image.naturalWidth, image.naturalHeight));
+			const canvas = document.createElement('canvas');
+			canvas.width = Math.max(1, Math.round(image.naturalWidth * scale));
+			canvas.height = Math.max(1, Math.round(image.naturalHeight * scale));
+			const context = canvas.getContext('2d');
+			if (!context) throw new Error('Unable to prepare this image.');
+
+			context.fillStyle = '#e8e2d7';
+			context.fillRect(0, 0, canvas.width, canvas.height);
+			context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+			let blob = await encodeJpeg(canvas, 0.86);
+			if (blob.size > maxImageBytes) blob = await encodeJpeg(canvas, 0.72);
+			if (blob.size > maxImageBytes) blob = await encodeJpeg(canvas, 0.58);
+			if (blob.size > maxImageBytes) {
+				throw new Error('That photo is still too large after resizing. Try a smaller image.');
+			}
+
+			const baseName = file.name.replace(/\.[^.]+$/, '').replace(/[^a-z0-9_-]+/gi, '-') || 'inventory-photo';
+			const processedFile = new File([blob], `${baseName}.jpg`, { type: 'image/jpeg' });
+
+			if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl);
+			localPreviewUrl = URL.createObjectURL(processedFile);
+			pendingImageFile = processedFile;
+			notice = 'Photo ready. Save the listing to publish it.';
+		} catch (error) {
+			imageError = error instanceof Error ? error.message : 'That image could not be processed.';
+		} finally {
+			processingImage = false;
+			input.value = '';
+		}
+	}
+
 	function confirmRemoval(event) {
 		if (!confirm(`Remove ${draft.title} from the public catalog?`)) {
 			event.preventDefault();
 		}
 	}
 
-	function enhanceEditor() {
+	function enhanceEditor({ formData, cancel }) {
+		if (processingImage) {
+			cancel();
+			imageError = 'Wait for the photo to finish processing before saving.';
+			return;
+		}
+
+		if (pendingImageFile) {
+			formData.set('imageFile', pendingImageFile, pendingImageFile.name);
+		}
+
 		notice = '';
 		saveState = 'saving';
 
@@ -105,6 +208,7 @@
 			}
 
 			if (result.data.operation === 'remove') {
+				clearPendingImage();
 				selectedId = '';
 				draft = blankItem();
 				savedFingerprint = '';
@@ -115,6 +219,7 @@
 			}
 
 			selectedId = result.data.item.id;
+			clearPendingImage();
 			draft = structuredClone(result.data.item);
 			savedFingerprint = itemFingerprint(result.data.item);
 			creating = false;
@@ -245,14 +350,25 @@
 			<form id="item-editor" class="editor-form" method="POST" action="?/save" use:enhance={enhanceEditor}>
 				<input type="hidden" name="slug" value={selectedId} />
 				<input type="hidden" name="status" value={draft.status} />
-				<input type="hidden" name="image" value={draft.image} />
+				<input type="hidden" name="existingImage" value={draft.image} />
 
 				<div class="editor-photo">
 					<div class="editor-photo-preview">
-						<img class="editor-photo-backdrop" src={draft.image} alt="" aria-hidden="true" />
-						<img class="editor-photo-image" src={draft.image} alt="Current item preview" />
+						<img class="editor-photo-backdrop" src={previewImage} alt="" aria-hidden="true" />
+						<img class="editor-photo-image" src={previewImage} alt="Current item preview" />
 					</div>
-					<p class="photo-button">Listings use a 4:5 thumbnail crop. Keep the piece centered in the photo.</p>
+					<label class="photo-button">
+						<span>{processingImage ? 'Preparing photo…' : pendingImageFile ? 'Choose a different photo' : 'Choose photo'}</span>
+						<input
+							type="file"
+							accept="image/jpeg,image/png,image/webp"
+							capture="environment"
+							disabled={processingImage}
+							onchange={chooseImage}
+						/>
+					</label>
+					<p class="photo-guidance">Photos are resized automatically. Keep the piece centered for the 4:5 catalog crop.</p>
+					{#if imageError}<p class="photo-error" role="alert">{imageError}</p>{/if}
 				</div>
 
 				<label class="editor-title-field">

@@ -1450,6 +1450,18 @@ img {
 	border: 1px solid var(--ink);
 	cursor: pointer;
 	text-align: center;
+	transition:
+		background 150ms ease,
+		color 150ms ease;
+}
+
+.photo-button:hover {
+	background: var(--ink);
+	color: var(--paper);
+}
+
+.photo-button:hover > span {
+	color: var(--paper) !important;
 }
 
 .photo-button > span {
@@ -1463,6 +1475,21 @@ img {
 	height: 1px;
 	overflow: hidden;
 	clip: rect(0 0 0 0);
+}
+
+.photo-guidance,
+.photo-error {
+	margin: 10px 0 0;
+	font-size: 0.72rem;
+	line-height: 1.45;
+}
+
+.photo-guidance {
+	color: var(--muted);
+}
+
+.photo-error {
+	color: #8e3829;
 }
 
 .editor-title-field,
