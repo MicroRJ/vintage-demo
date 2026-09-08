@@ -107,18 +107,6 @@
 	gap: 12px;
 }
 
-.logout-button {
-	padding: 10px 2px;
-	border: 0;
-	border-bottom: 1px solid var(--ink);
-	background: transparent;
-	cursor: pointer;
-	font-size: 0.68rem;
-	font-weight: 600;
-	letter-spacing: 0.1em;
-	text-transform: uppercase;
-}
-
 @media (max-width: 600px) {
 	.admin-heading-actions {
 		align-items: center;

@@ -129,9 +129,6 @@
 			</div>
 			<div class="staff-mode-actions">
 				<a class="staff-primary-action" href="/admin?new=1"><Icon name="plus" /> Add new piece</a>
-				<form method="POST" action="/logout">
-					<button class="logout-button" type="submit">Log out</button>
-				</form>
 			</div>
 		</div>
 	{/if}
